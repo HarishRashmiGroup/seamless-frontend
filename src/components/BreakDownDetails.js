@@ -57,7 +57,7 @@ const BreakdownDetails = ({ breakdownDetails, rootCauses, departments, breakdown
             date: breakdown.date ?? "",
         };
         try {
-            const response = await axios.post('http://https://seamless-backend-nz7d.onrender.com/hourly/breakdown', formData, {
+            const response = await axios.post('https://seamless-backend-nz7d.onrender.com/hourly/breakdown', formData, {
                 headers: {
                     'Content-Type': 'application/json',
                 },

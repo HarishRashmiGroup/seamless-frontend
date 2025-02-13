@@ -62,7 +62,7 @@ export const MaintenancePage = () => {
 
     const fetchShifts = async (shiftLetter) => {
         try {
-            const response = await axios.post('http://https://seamless-backend-nz7d.onrender.com/basic/shifts', {
+            const response = await axios.post('https://seamless-backend-nz7d.onrender.com/basic/shifts', {
                 shift: shiftLetter,
             }, {
                 headers: {
@@ -96,7 +96,7 @@ export const MaintenancePage = () => {
 
     const fetchMachines = async () => {
         try {
-            const response = await axios.get('http://https://seamless-backend-nz7d.onrender.com/basic/machines');
+            const response = await axios.get('https://seamless-backend-nz7d.onrender.com/basic/machines');
 
             if (response.status === 200) {
                 setMachines(response.data);
