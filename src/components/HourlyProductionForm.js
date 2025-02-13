@@ -52,7 +52,7 @@ export const HourlyProductionForm = () => {
     const [types, setTypes] = useState([]);
 
     const [formData, setFormData] = useState({
-        id: '',
+        id: null,
         operatorName: '',
         operatorPhoneNo: '',
         shiftIncharge: '',
@@ -117,7 +117,7 @@ export const HourlyProductionForm = () => {
     const addBreakdownDetailsLine = () => {
         setFormData((prev) => ({
             ...prev,
-            breakdownDetails: [...prev.breakdownDetails, { startTime: null, duration: null, endTime: null, reason: null, typeId: null, departmentId: null }],
+            breakdownDetails: [...prev.breakdownDetails, { id: null, startTime: null, duration: null, endTime: null, reason: null, typeId: null, departmentId: null, rootCauseId: null, tempSolution: null, permanentSolution: null, actionPlan: null, date: null, purchaseIssue: null, nameOfEquipment: null }],
         }));
     };
 
@@ -129,13 +129,16 @@ export const HourlyProductionForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:3000/hourly/prod', formData, {
+            const response = await axios.post(formData.id ? `http://192.16.4.62:3000/hourly/prod/${formData.id}` : 'http://192.16.4.62:3000/hourly/prod', formData, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
             });
-            console.log(response)
             if (response.status === 201) {
+                setFormData(prevData => ({
+                    ...prevData,
+                    ...response.data.formData
+                }));
                 toast({
                     // title: "Form Submitted",
                     description: response.data.message,
@@ -148,18 +151,17 @@ export const HourlyProductionForm = () => {
             console.error('Error uploading:', error);
             toast({
                 title: "Error uploading.",
-                description: "",
+                description: error.response?.data?.message || error.message,
                 status: "error",
                 duration: 5000,
                 isClosable: true,
             });
         }
-        console.log("Form Data:", formData);
     };
 
     const fetchMachines = async () => {
         try {
-            const response = await axios.get('http://localhost:3000/basic/machines');
+            const response = await axios.get('http://192.16.4.62:3000/basic/machines');
 
             if (response.status === 200) {
                 setMachines(response.data);
@@ -179,7 +181,7 @@ export const HourlyProductionForm = () => {
 
     const fetchBDDropdowns = async () => {
         try {
-            const response = await axios.get('http://localhost:3000/basic/bd');
+            const response = await axios.get('http://192.16.4.62:3000/basic/bd');
 
             if (response.status === 200) {
                 setRootCauses(response.data.rootCauses);
@@ -201,9 +203,9 @@ export const HourlyProductionForm = () => {
 
     const fetchShifts = async (shiftLetter) => {
         try {
-            const response = await axios.post('http://localhost:3000/basic/shifts', {
-                shift: shiftLetter,
-                shiftId: isNaN(Number(initialValues.shiftId)) ? undefined : Number(initialValues.shiftId)
+            const response = await axios.post('http://192.16.4.62:3000/basic/shifts', {
+                shift: formData.shiftLetter,
+                shiftId: isNaN(Number(initialValues.shiftId)) ? undefined : Number(initialValues.shiftId) || undefined
             }, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -230,20 +232,20 @@ export const HourlyProductionForm = () => {
     };
 
     const handleShiftChange = (e) => {
-        const shiftLetter = e.target.value; setFormData(prev => ({
+        const shiftLetter = e.target.value;
+        setFormData(prev => ({
             ...prev,
             shiftLetter: shiftLetter,
             shiftId: ''
         }));
         setSelectedShift(shiftLetter);
-        fetchShifts(shiftLetter);
     };
 
 
     const fetchProductionData = async (machineId, date, shiftId) => {
         setIsLoading(true);
         try {
-            const response = await fetch(`http://localhost:3000/hourly/prod?machineId=${machineId}&date=${date}&shiftId=${shiftId}`);
+            const response = await fetch(`http://192.16.4.62:3000/hourly/prod?machineId=${machineId}&date=${date}&shiftId=${shiftId}`);
             if (response.ok) {
                 const data = await response.json();
                 setFormData(prevData => ({
@@ -264,10 +266,15 @@ export const HourlyProductionForm = () => {
         }
     };
 
+    const needRefresh = () => {
+        fetchProductionData(formData.machineId, formData.date, formData.shiftId);
+    }
+
     useEffect(() => {
         fetchMachines();
         fetchBDDropdowns();
     }, []);
+
 
     useEffect(() => {
         setFormData(prev => ({
@@ -280,10 +287,8 @@ export const HourlyProductionForm = () => {
     }, [initialValues]);
 
     useEffect(() => {
-        if (initialValues.shiftLetter) {
-            fetchShifts(initialValues.shiftLetter);
-        }
-    }, [initialValues.shiftLetter]);
+        fetchShifts(formData.shiftLetter);
+    }, [formData.shiftLetter]);
 
     useEffect(() => {
         setSearchParams({
@@ -298,6 +303,83 @@ export const HourlyProductionForm = () => {
         <Box p={6} maxWidth="1000px" margin="auto">
             <form onSubmit={handleSubmit}>
                 <VStack spacing={6}>
+
+                    {/* Machine and Shift Details */}
+                    <Box width="full " bg={'gray.100'} p={1} borderRadius={'md'}>
+                        <Text userSelect={'none'} fontSize="xl" mb={4} borderBottom={'1px solid gray'} >Machine and Shift Details <span style={{ fontSize: '16px', color: 'red' }}>*</span></Text>
+                        <Stack direction={{ base: "column", md: "row" }} spacing={4} width="full">
+                            <FormControl isRequired>
+                                <FormLabel userSelect={'none'}>Machine</FormLabel>
+                                <Select
+                                    bg={'white'}
+                                    placeholder="Select Machine"
+                                    value={formData.machineId}
+                                    onChange={(e) => handleChange(e)}
+                                    name="machineId"
+                                >
+                                    {machines.map((machine) => (
+                                        <option key={machine.id} value={machine.id}>
+                                            {machine.label}
+                                        </option>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                            <HStack width={'full'}>
+                                <FormControl isRequired>
+                                    <FormLabel userSelect={'none'}>Shift</FormLabel>
+                                    <Select
+                                        bg={'white'}
+                                        placeholder="Select Shift"
+                                        value={selectedShift}
+                                        onChange={handleShiftChange}
+                                    >
+                                        <option value="A">Shift A</option>
+                                        <option value="B">Shift B</option>
+                                        <option value="C">Shift C</option>
+                                    </Select>
+                                </FormControl>
+                                <FormControl isRequired>
+                                    <FormLabel>Time</FormLabel>
+                                    <Select
+                                        bg={'white'}
+                                        placeholder={formData.shiftLetter ? `Time for ${formData.shiftLetter} shift` : 'Select shift first'}
+                                        value={formData.shiftId}
+                                        onChange={(e) => handleChange(e)}
+                                        name="shiftId"
+                                    >
+                                        {shifts.map((shift) => (
+                                            <option key={shift.id} value={shift.id}>
+                                                {shift.label}
+                                            </option>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </HStack>
+                        </Stack>
+
+                        {/* Date and Status */}
+                        <Stack p={1} direction={{ base: "column", md: "row" }} spacing={4} width="full">
+                            <FormControl isRequired>
+                                <FormLabel userSelect={'none'}>Date</FormLabel>
+                                <Input
+                                    bg={'white'}
+                                    type="date"
+                                    name="date"
+                                    value={formData.date}
+                                    onChange={handleChange}
+                                />
+                            </FormControl>
+                            <FormControl>
+                                <FormLabel userSelect={'none'}>Machine running status</FormLabel>
+                                <RadioGroup h={'full'} mt={'16px'} value={running ? "true" : "false"} onChange={(e) => setRunning(e === "true" ? true : false)}>
+                                    <HStack gap={6}>
+                                        <Radio cursor={'pointer'} value="true">Run</Radio>
+                                        <Radio cursor={'pointer'} value="false">Not Run</Radio>
+                                    </HStack>
+                                </RadioGroup>
+                            </FormControl>
+                        </Stack>
+                    </Box>
                     {/* Operator Details */}
                     <Box width="full" bg={'gray.100'} p={1} borderRadius={'md'}>
                         <Text userSelect={'none'} fontSize="xl" mb={4} borderBottom={'1px solid gray'}>Basic Details</Text>
@@ -343,6 +425,7 @@ export const HourlyProductionForm = () => {
                                     name="shiftInchargePhoneNo"
                                     value={formData.shiftInchargePhoneNo}
                                     onChange={handleChange}
+                                    onWheel={(e) => e.target.blur()}
                                     type="number"
                                     autoComplete="false"
                                 />
@@ -366,86 +449,13 @@ export const HourlyProductionForm = () => {
                                     name="shiftSuperVisorPhoneNo"
                                     value={formData.shiftSuperVisorPhoneNo}
                                     onChange={handleChange}
+                                    onWheel={(e) => e.target.blur()}
                                     type="number"
                                     autoComplete="false"
                                 />
                             </FormControl>
                         </Stack>
                     </Box>
-
-                    {/* Machine and Shift Details */}
-                    <Stack bg={'gray.100'} p={1} borderRadius={'md'} direction={{ base: "column", md: "row" }} spacing={4} width="full">
-                        <FormControl isRequired>
-                            <FormLabel userSelect={'none'}>Machine</FormLabel>
-                            <Select
-                                bg={'white'}
-                                placeholder="Select Machine"
-                                value={formData.machineId}
-                                onChange={(e) => handleChange(e)}
-                                name="machineId"
-                            >
-                                {machines.map((machine) => (
-                                    <option key={machine.id} value={machine.id}>
-                                        {machine.label}
-                                    </option>
-                                ))}
-                            </Select>
-                        </FormControl>
-                        <HStack width={'full'}>
-                            <FormControl isRequired>
-                                <FormLabel userSelect={'none'}>Shift</FormLabel>
-                                <Select
-                                    bg={'white'}
-                                    placeholder="Select Shift"
-                                    value={selectedShift}
-                                    onChange={handleShiftChange}
-                                >
-                                    <option value="A">Shift A</option>
-                                    <option value="B">Shift B</option>
-                                    <option value="C">Shift C</option>
-                                </Select>
-                            </FormControl>
-                            <FormControl isRequired>
-                                <FormLabel>Time</FormLabel>
-                                <Select
-                                    bg={'white'}
-                                    placeholder={formData.shiftLetter ? `Time for ${formData.shiftLetter} shift` : 'Select shift first'}
-                                    value={formData.shiftId}
-                                    onChange={(e) => handleChange(e)}
-                                    name="shiftId"
-                                >
-                                    {shifts.map((shift) => (
-                                        <option key={shift.id} value={shift.id}>
-                                            {shift.label}
-                                        </option>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                        </HStack>
-                    </Stack>
-
-                    {/* Date and Status */}
-                    <Stack bg={'gray.100'} borderRadius={'md'} p={1} direction={{ base: "column", md: "row" }} spacing={4} width="full">
-                        <FormControl isRequired>
-                            <FormLabel userSelect={'none'}>Date</FormLabel>
-                            <Input
-                                bg={'white'}
-                                type="date"
-                                name="date"
-                                value={formData.date}
-                                onChange={handleChange}
-                            />
-                        </FormControl>
-                        <FormControl>
-                            <FormLabel userSelect={'none'}>Machine running status</FormLabel>
-                            <RadioGroup h={'full'} mt={'16px'} value={running ? "true" : "false"} onChange={(e) => setRunning(e === "true" ? true : false)}>
-                                <HStack gap={6}>
-                                    <Radio cursor={'pointer'} value="true">Run</Radio>
-                                    <Radio cursor={'pointer'} value="false">Not Run</Radio>
-                                </HStack>
-                            </RadioGroup>
-                        </FormControl>
-                    </Stack>
 
                     {/* Dia Details */}
                     <Box width="full" bg={'gray.100'} borderRadius={'md'} p={1}>
@@ -455,7 +465,7 @@ export const HourlyProductionForm = () => {
                                 <Input
                                     bg={'white'}
                                     placeholder="Diameter"
-                                    value={detail.diameter}
+                                    value={detail.diameter ?? ''}
                                     onChange={(e) => handleDiaDetailsChange(index, 'diameter', e.target.value)}
                                     type="number"
                                     required
@@ -463,7 +473,7 @@ export const HourlyProductionForm = () => {
                                 <Input
                                     bg={'white'}
                                     placeholder="Thickness"
-                                    value={detail.thickness}
+                                    value={detail.thickness ?? ''}
                                     onChange={(e) => handleDiaDetailsChange(index, 'thickness', e.target.value)}
                                     type="number"
                                     required
@@ -471,7 +481,7 @@ export const HourlyProductionForm = () => {
                                 <Input
                                     bg={'white'}
                                     placeholder="Length"
-                                    value={detail.length}
+                                    value={detail.length ?? ''}
                                     onChange={(e) => handleDiaDetailsChange(index, 'length', e.target.value)}
                                     type="number"
                                     required
@@ -502,7 +512,7 @@ export const HourlyProductionForm = () => {
                                     bg={'white'}
                                     name="stdProdPerHr"
                                     type="number"
-                                    value={formData.stdProdPerHr}
+                                    value={formData.stdProdPerHr ?? ''}
                                     onWheel={(e) => e.target.blur()}
                                     onChange={handleChange}
                                 />
@@ -513,7 +523,7 @@ export const HourlyProductionForm = () => {
                                     bg={'white'}
                                     name="actProdPerHr"
                                     type="number"
-                                    value={formData.actProdPerHr}
+                                    value={formData.actProdPerHr ?? ''}
                                     onWheel={(e) => e.target.blur()}
                                     onChange={handleChange}
                                 />
@@ -526,18 +536,18 @@ export const HourlyProductionForm = () => {
                                     bg={'white'}
                                     name="Difference"
                                     type="number"
-                                    value={(formData.stdProdPerHr - formData.actProdPerHr)}
+                                    value={(formData.stdProdPerHr - formData.actProdPerHr) ?? ''}
                                     disabled
                                 />
                             </FormControl>
-                            <FormControl>
+                            <FormControl disabled>
                                 <FormLabel userSelect={'none'}>Running Mins</FormLabel>
                                 <Input
                                     bg={'white'}
-                                    name="standardProduction"
+                                    name="runningMints"
                                     type="number"
-                                    value={formData.standardProduction}
-                                    onChange={handleChange}
+                                    value={formData.runningMints ?? ''}
+                                    disabled
                                 />
                             </FormControl>
                         </Stack>
@@ -553,12 +563,13 @@ export const HourlyProductionForm = () => {
                             departments={departments}
                             rootCauses={rootCauses}
                             breakdownTypes={types}
+                            needRefresh={needRefresh}
                         />
                     </Box>
 
                     {/* Submit Button */}
                     <Button type="submit" colorScheme="blue" width="full" mt={6} display={user.role === 'maintenance' ? 'none' : 'auto'} isLoading={isLoading}>
-                        Record Production Data
+                        {formData.id ? "Update" : "Record"} Production Data
                     </Button>
                 </VStack>
             </form>

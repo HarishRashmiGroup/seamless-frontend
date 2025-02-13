@@ -163,8 +163,6 @@ const ProductionForm = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         calculateValues();
-        console.log(formData);
-        console.log(editedFields);
         toast({
             title: "Form Submitted",
             description: "",

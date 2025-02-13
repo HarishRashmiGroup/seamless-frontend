@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
     // const { data: user, error } = useSWR('/api/user', fetcher);
     const user = {
         "userName": "John Doe",
-        "role": "operator",
+        "role": "head",
         "department": "Production"
     };
     return <AuthContext.Provider value={user}>{children}</AuthContext.Provider>;

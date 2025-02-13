@@ -54,7 +54,6 @@ export const MaintenancePage = () => {
     );
 
     const handleClick = (shiftId) => {
-        console.log(`/hourly?machine=${machineId}&date=${date}&shift=${3}`);
         navigate(`/hourly?machine=${machineId}&date=${date}&shift=${Number(shiftId)}`);
     };
 
@@ -63,7 +62,7 @@ export const MaintenancePage = () => {
 
     const fetchShifts = async (shiftLetter) => {
         try {
-            const response = await axios.post('http://localhost:3000/basic/shifts', {
+            const response = await axios.post('http://192.16.4.62:3000/basic/shifts', {
                 shift: shiftLetter,
             }, {
                 headers: {
@@ -97,7 +96,7 @@ export const MaintenancePage = () => {
 
     const fetchMachines = async () => {
         try {
-            const response = await axios.get('http://localhost:3000/basic/machines');
+            const response = await axios.get('http://192.16.4.62:3000/basic/machines');
 
             if (response.status === 200) {
                 setMachines(response.data);

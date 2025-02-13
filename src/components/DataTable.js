@@ -62,7 +62,6 @@ const DataTable = ({ data }) => {
     const scrollTable = (direction) => {
         if (tableRef.current) {
             const scrollAmount = direction === "left" ? -150 : 150;
-            console.log(tableRef.current);
             tableRef.current.scrollBy({
                 left: scrollAmount,
                 behavior: "smooth",
