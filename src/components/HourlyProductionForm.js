@@ -129,7 +129,7 @@ export const HourlyProductionForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post(formData.id ? `http://192.16.4.62:3000/hourly/prod/${formData.id}` : 'http://192.16.4.62:3000/hourly/prod', formData, {
+            const response = await axios.post(formData.id ? `http://https://seamless-backend-nz7d.onrender.com/hourly/prod/${formData.id}` : 'http://https://seamless-backend-nz7d.onrender.com/hourly/prod', formData, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -161,7 +161,7 @@ export const HourlyProductionForm = () => {
 
     const fetchMachines = async () => {
         try {
-            const response = await axios.get('http://192.16.4.62:3000/basic/machines');
+            const response = await axios.get('http://https://seamless-backend-nz7d.onrender.com/basic/machines');
 
             if (response.status === 200) {
                 setMachines(response.data);
@@ -181,7 +181,7 @@ export const HourlyProductionForm = () => {
 
     const fetchBDDropdowns = async () => {
         try {
-            const response = await axios.get('http://192.16.4.62:3000/basic/bd');
+            const response = await axios.get('http://https://seamless-backend-nz7d.onrender.com/basic/bd');
 
             if (response.status === 200) {
                 setRootCauses(response.data.rootCauses);
@@ -203,7 +203,7 @@ export const HourlyProductionForm = () => {
 
     const fetchShifts = async (shiftLetter) => {
         try {
-            const response = await axios.post('http://192.16.4.62:3000/basic/shifts', {
+            const response = await axios.post('http://https://seamless-backend-nz7d.onrender.com/basic/shifts', {
                 shift: formData.shiftLetter,
                 shiftId: isNaN(Number(initialValues.shiftId)) ? undefined : Number(initialValues.shiftId) || undefined
             }, {
@@ -245,7 +245,7 @@ export const HourlyProductionForm = () => {
     const fetchProductionData = async (machineId, date, shiftId) => {
         setIsLoading(true);
         try {
-            const response = await fetch(`http://192.16.4.62:3000/hourly/prod?machineId=${machineId}&date=${date}&shiftId=${shiftId}`);
+            const response = await fetch(`http://https://seamless-backend-nz7d.onrender.com/hourly/prod?machineId=${machineId}&date=${date}&shiftId=${shiftId}`);
             if (response.ok) {
                 const data = await response.json();
                 setFormData(prevData => ({
