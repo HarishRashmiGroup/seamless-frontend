@@ -21,6 +21,7 @@ import BreakdownDetails from "./BreakDownDetails";
 import { useAuth } from "../providers/authProvider";
 import { useSearchParams } from "react-router-dom";
 import axios from "axios";
+import FullScreenLoader from "./FullScreenLoader";
 
 export const HourlyProductionForm = () => {
     const toast = useToast();
@@ -296,11 +297,13 @@ export const HourlyProductionForm = () => {
             date: formData.date,
             shift: formData.shiftId
         });
-        fetchProductionData(formData.machineId, formData.date, formData.shiftId);
+        if (formData.machineId && formData.date && formData.shiftId)
+            fetchProductionData(formData.machineId, formData.date, formData.shiftId);
     }, [formData.machineId, formData.date, formData.shiftId]);
 
     return (
         <Box p={6} maxWidth="1000px" margin="auto">
+            <FullScreenLoader isLoading={isLoading} />
             <form onSubmit={handleSubmit}>
                 <VStack spacing={6}>
 

@@ -4,6 +4,7 @@ import { Box, Spinner, Text } from '@chakra-ui/react';
 import Navbar from './components/Navbar';
 import AppProviders from './providers/appProvider';
 import { AuthProvider, useAuth } from './providers/authProvider';
+import ShiftReport from './components/ShiftReport.js';
 
 const Dashboard = lazy(() => import('./components/Dashbord.js'));
 const ProductionForm = lazy(() => import('./components/ProductionForm.js'));
@@ -38,6 +39,14 @@ function App() {
                     <ProtectedRoute allowedRoles={['admin', 'manager']}>
                       <ProductionForm />
                     </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/shift-report"
+                  element={
+                    // <ProtectedRoute allowedRoles={['operator', 'admin', 'manager']}>
+                      <ShiftReport />
+                    // </ProtectedRoute>
                   }
                 />
                 <Route path="/maintenance" element={<MaintenancePage />} />

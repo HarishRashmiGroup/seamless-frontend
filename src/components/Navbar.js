@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ClipboardPlusIcon, LayoutDashboardIcon, LogOut, Menu, WrenchIcon, X } from 'lucide-react';
+import { ClipboardPlusIcon, Clock, LayoutDashboardIcon, LogOut, Menu, WrenchIcon, X } from 'lucide-react';
 import {
     Box,
     Flex,
@@ -73,6 +73,7 @@ const Navbar = () => {
                     <Button leftIcon={<Icon as={LayoutDashboardIcon} w={5} h={5} />} colorScheme={location.pathname === '/' ? "blue" : "gray"} variant="solid" onClick={() => navigate('/')}>Dashboard</Button>
                     <Button leftIcon={<Icon as={WrenchIcon} w={5} h={5} />} colorScheme={location.pathname === '/maintenance' ? "blue" : "gray"} variant="solid" onClick={() => navigate('/maintenance')}>Maintenance</Button>
                     <Button leftIcon={<Icon as={ClipboardPlusIcon} w={5} h={5} />} colorScheme={location.pathname === '/hourly' ? "blue" : "gray"} variant="solid" onClick={() => navigate('/hourly')}>Hourly Report</Button>
+                    <Button leftIcon={<Icon as={Clock} w={5} h={5} />} colorScheme={location.pathname === '/shift-report' ? "blue" : "gray"} variant="solid" onClick={() => navigate('/shift-report')}>Shift Report</Button>
                     <Button leftIcon={<Icon as={LogOut} w={5} h={5} />} colorScheme="red" variant="solid" onClick={() => alert('Logging out...')}>Logout</Button>
                 </Flex>
                 <Icon
@@ -115,6 +116,14 @@ const Navbar = () => {
                                 colorScheme={location.pathname === '/hourly' ? "blue" : "gray"}
                                 variant="solid"
                                 onClick={() => navigate('/hourly')}
+                            >
+                                Hourly Report
+                            </Button>
+                            <Button
+                                leftIcon={<Icon as={Clock} w={5} h={5} />}
+                                colorScheme={location.pathname === '/shift-report' ? "blue" : "gray"}
+                                variant="solid"
+                                onClick={() => navigate('/shift-report')}
                             >
                                 Hourly Report
                             </Button>

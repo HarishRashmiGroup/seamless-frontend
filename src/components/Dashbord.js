@@ -3,7 +3,7 @@ import Navbar from "./Navbar";
 
 export const Dashboard = () => {
     const tableData = [{
-        machine: "HOT MEAL-1",
+        machine: "HOT MILL-1",
         status:
             [
                 'A', 'B', 'C'

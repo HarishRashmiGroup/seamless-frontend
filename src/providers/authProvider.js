@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
     const user = {
         "userName": "John Doe",
         "role": "head",
-        "department": "Production"
+        "department": "operator"
     };
     return <AuthContext.Provider value={user}>{children}</AuthContext.Provider>;
 };
