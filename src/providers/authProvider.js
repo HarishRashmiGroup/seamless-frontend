@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
 
             try {
                 const response = await axios.get(
-                    `http://localhost:3000/user/basic`,
+                    `https://seamless-backend-nz7d.onrender.com/user/basic`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
