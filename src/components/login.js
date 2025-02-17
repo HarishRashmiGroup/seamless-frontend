@@ -12,7 +12,6 @@ import {
     Text,
     useToast,
 } from "@chakra-ui/react";
-import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -22,12 +21,12 @@ export default function LoginPage() {
     const [loginId, setLoginId] = useState("");
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    const [bgImage, setBgImage] = useState("/seamless1.jpeg");
+    const [bgImage, setBgImage] = useState("https://blackbucks-media.s3.ap-south-1.amazonaws.com/Seamless1-1739803270669.jpeg");
 
     const images = [
-        "/seamless1.jpeg",
-        "/seamless2.jpeg",
-        "/seamless3.jpeg",
+        "https://blackbucks-media.s3.ap-south-1.amazonaws.com/Seamless1-1739803270669.jpeg",
+        "https://blackbucks-media.s3.ap-south-1.amazonaws.com/Seamless2-1739803344706.jpeg",
+        "https://blackbucks-media.s3.ap-south-1.amazonaws.com/Seamless3-1739803378277.jpeg",
     ];
 
     useEffect(() => {

@@ -9,7 +9,7 @@
       name="description"
       content="Seamless dashboard"
     />
-    <!-- <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" /> -->
+    <link rel="apple-touch-icon" href="https://blackbucks-media.s3.ap-south-1.amazonaws.com/Rashmi%20group%20logo%20White%20Bar-1738846415526.png" />
     <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
@@ -25,6 +25,24 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>Seamless</title>
+    <script>
+      // JavaScript to cache images in browser storage
+      function preloadImages(imageUrls) {
+        imageUrls.forEach(url => {
+          const img = new Image();
+          img.src = url;
+        });
+      }
+
+      window.onload = function () {
+        preloadImages([
+          "https://blackbucks-media.s3.ap-south-1.amazonaws.com/Rashmi%20group%20logo%20White%20Bar-1738846415526.png",
+          "https://blackbucks-media.s3.ap-south-1.amazonaws.com/Seamless1-1739803270669.jpeg",
+          "https://blackbucks-media.s3.ap-south-1.amazonaws.com/Seamless2-1739803344706.jpeg",
+          "https://blackbucks-media.s3.ap-south-1.amazonaws.com/Seamless3-1739803378277.jpeg"
+        ]);
+      };
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
