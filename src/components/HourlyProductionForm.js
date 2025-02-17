@@ -65,7 +65,7 @@ export const HourlyProductionForm = () => {
         shiftLetter: initialValues.shiftLetter,
         date: '',
         status: true,
-        diaDetails: [{ diameter: '', thickness: '', length: '' }],
+        diaDetails: [{ diameter: '', od: '', thickness: '', length: '' }],
         breakdownDetails: [],
         stdProdPerHr: '',
         actProdPerHr: '',
@@ -86,7 +86,7 @@ export const HourlyProductionForm = () => {
     const addDiaDetailsLine = () => {
         setFormData((prev) => ({
             ...prev,
-            diaDetails: [...prev.diaDetails, { diameter: '', thickness: '', length: '' }],
+            diaDetails: [...prev.diaDetails, { diameter: '', od: '', thickness: '', length: '' }],
         }));
     };
 
@@ -471,6 +471,16 @@ export const HourlyProductionForm = () => {
                                     value={detail.diameter ?? ''}
                                     onChange={(e) => handleDiaDetailsChange(index, 'diameter', e.target.value)}
                                     type="number"
+                                    onWheel={(e) => e.target.blur()}
+                                    required
+                                />
+                                <Input
+                                    bg={'white'}
+                                    placeholder="OD"
+                                    value={detail.od ?? ''}
+                                    onChange={(e) => handleDiaDetailsChange(index, 'od', e.target.value)}
+                                    type="number"
+                                    onWheel={(e) => e.target.blur()}
                                     required
                                 />
                                 <Input
@@ -479,6 +489,7 @@ export const HourlyProductionForm = () => {
                                     value={detail.thickness ?? ''}
                                     onChange={(e) => handleDiaDetailsChange(index, 'thickness', e.target.value)}
                                     type="number"
+                                    onWheel={(e) => e.target.blur()}
                                     required
                                 />
                                 <Input
@@ -487,6 +498,7 @@ export const HourlyProductionForm = () => {
                                     value={detail.length ?? ''}
                                     onChange={(e) => handleDiaDetailsChange(index, 'length', e.target.value)}
                                     type="number"
+                                    onWheel={(e) => e.target.blur()}
                                     required
                                 />
                                 <IconButton
@@ -508,7 +520,7 @@ export const HourlyProductionForm = () => {
                     {/* Production Details */}
                     <Box width="full " bg={'gray.100'} p={1} borderRadius={'md'}>
                         <Text userSelect={'none'} fontSize="xl" mb={4} borderBottom={'1px solid gray'}>Production Details</Text>
-                        <Stack direction={{ base: "column", md: "row" }} spacing={4}>
+                        <Stack direction={{ base: "column", md: "row" }} spacing={4} mb={4}>
                             <FormControl isRequired>
                                 <FormLabel userSelect={'none'}>Standard Production/HR(nos)</FormLabel>
                                 <Input
@@ -527,6 +539,30 @@ export const HourlyProductionForm = () => {
                                     name="actProdPerHr"
                                     type="number"
                                     value={formData.actProdPerHr ?? ''}
+                                    onWheel={(e) => e.target.blur()}
+                                    onChange={handleChange}
+                                />
+                            </FormControl>
+                        </Stack>
+                        <Stack direction={{ base: "column", md: "row" }} spacing={4}>
+                            <FormControl isRequired>
+                                <FormLabel userSelect={'none'}>Standard Production/HR(MT)</FormLabel>
+                                <Input
+                                    bg={'white'}
+                                    name="stdProdMTPerHr"
+                                    type="number"
+                                    value={formData.stdProdMTPerHr ?? ''}
+                                    onWheel={(e) => e.target.blur()}
+                                    onChange={handleChange}
+                                />
+                            </FormControl>
+                            <FormControl isRequired>
+                                <FormLabel userSelect={'none'}>Actual Production/HR(MT)</FormLabel>
+                                <Input
+                                    bg={'white'}
+                                    name="actProdPerHr"
+                                    type="number"
+                                    value={formData.actProdMTPerHr ?? ''}
                                     onWheel={(e) => e.target.blur()}
                                     onChange={handleChange}
                                 />

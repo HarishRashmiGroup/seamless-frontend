@@ -36,7 +36,7 @@ function App() {
                 <Route
                   path="/production"
                   element={
-                    <ProtectedRoute allowedRoles={['admin', 'manager']}>
+                    <ProtectedRoute allowedRoles={['operator','admin', 'manager']}>
                       <ProductionForm />
                     </ProtectedRoute>
                   }

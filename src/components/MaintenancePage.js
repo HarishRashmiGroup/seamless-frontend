@@ -15,10 +15,11 @@ import {
     Select,
     useToast
 } from "@chakra-ui/react";
-import { ChevronLeftCircle, ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useAuth } from "../providers/authProvider";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import FullScreenLoader from "./FullScreenLoader";
 
 export const MaintenancePage = () => {
     const user = useAuth();
@@ -120,6 +121,8 @@ export const MaintenancePage = () => {
         fetchShifts('B');
         fetchShifts('C');
     }, [])
+
+    if (!machines.length) return <FullScreenLoader isLoading={!machines.length} />
 
     return (
         <Container maxW="6xl" py={8}>
