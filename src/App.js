@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 import AppProviders from './providers/appProvider';
 import { AuthProvider, useAuth } from './providers/authProvider';
 import ShiftReport from './components/ShiftReport.js';
+import LoginPage from './components/login.js';
 
 const Dashboard = lazy(() => import('./components/Dashbord.js'));
 const ProductionForm = lazy(() => import('./components/ProductionForm.js'));
@@ -32,11 +33,12 @@ function App() {
             <Box pt="80px">
               <Routes>
                 <Route path="/" element={<Dashboard />} />
+                <Route path="/login" element={<LoginPage />} />
                 <Route path="/hourly" element={<HourlyProductionForm />} />
                 <Route
                   path="/production"
                   element={
-                    <ProtectedRoute allowedRoles={['operator','admin', 'manager']}>
+                    <ProtectedRoute allowedRoles={['operator', 'admin', 'manager']}>
                       <ProductionForm />
                     </ProtectedRoute>
                   }
@@ -45,7 +47,7 @@ function App() {
                   path="/shift-report"
                   element={
                     // <ProtectedRoute allowedRoles={['operator', 'admin', 'manager']}>
-                      <ShiftReport />
+                    <ShiftReport />
                     // </ProtectedRoute>
                   }
                 />

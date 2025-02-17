@@ -70,6 +70,8 @@ export const HourlyProductionForm = () => {
         stdProdPerHr: '',
         actProdPerHr: '',
         runningMints: '',
+        stdProdMTPerHr: '',
+        actProdMTPerHr: '',
     });
 
     const handleChange = (e) => {
@@ -130,7 +132,7 @@ export const HourlyProductionForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post(formData.id ? `https://seamless-backend-nz7d.onrender.com/hourly/prod/${formData.id}` : 'https://seamless-backend-nz7d.onrender.com/hourly/prod', formData, {
+            const response = await axios.post(formData.id ? `https://seamless-backend-nz7d.onrender.com/hourly/prod/${formData.id}` : 'http://localhost:3000/hourly/prod', formData, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -560,7 +562,7 @@ export const HourlyProductionForm = () => {
                                 <FormLabel userSelect={'none'}>Actual Production/HR(MT)</FormLabel>
                                 <Input
                                     bg={'white'}
-                                    name="actProdPerHr"
+                                    name="actProdMTPerHr"
                                     type="number"
                                     value={formData.actProdMTPerHr ?? ''}
                                     onWheel={(e) => e.target.blur()}
@@ -570,12 +572,22 @@ export const HourlyProductionForm = () => {
                         </Stack>
                         <Stack direction={{ base: "column", md: "row" }} spacing={4} mt={4}>
                             <FormControl disabled>
-                                <FormLabel userSelect={'none'}>Difference</FormLabel>
+                                <FormLabel userSelect={'none'}>Difference(MT)</FormLabel>
                                 <Input
                                     bg={'white'}
-                                    name="Difference"
+                                    name="Difference(MT)"
                                     type="number"
                                     value={(formData.stdProdPerHr - formData.actProdPerHr) ?? ''}
+                                    disabled
+                                />
+                            </FormControl>
+                            <FormControl disabled>
+                                <FormLabel userSelect={'none'}>Difference(Pcs)</FormLabel>
+                                <Input
+                                    bg={'white'}
+                                    name="Difference(Pcs)"
+                                    type="number"
+                                    value={(formData.stdProdMTPerHr - formData.actProdMTPerHr) ?? ''}
                                     disabled
                                 />
                             </FormControl>

@@ -210,15 +210,15 @@ const ShiftReport = () => {
                 </FormControl>
             </HStack>}
             {isLoading && <FullScreenLoader isLoading={isLoading} />}
-            {!operatorInfo &&<Box w={'full'} justifyContent={'center'} display={'flex'} mt={100}>
-                
+            {!operatorInfo && <Box w={'full'} justifyContent={'center'} display={'flex'} mt={100}>
+
                 <Image
                     src="https://blackbucks-media.s3.ap-south-1.amazonaws.com/null_light-53585615fd723ba992bd2df7a10d10d1-1739771470996.png"
                     userSelect={'none'}
                     maxH={'50vh'}
                     draggable={false}
                 />
-                </Box>}
+            </Box>}
             {operatorInfo && (<>
                 <Card mb={6}>
                     <CardBody>
@@ -287,7 +287,7 @@ const ShiftReport = () => {
                                                         <Td rowSpan={item.breakdowns.length}>
                                                             {item.diaDetails?.map((d, idx) => (
                                                                 <span key={idx}>
-                                                                    {d.diameter} * {d.length} * {d.thickness}
+                                                                    {d.od} * {d.thickness} * {d.length}
                                                                     {idx !== item.diaDetails.length - 1 && <br />}
                                                                 </span>
                                                             ))}
@@ -325,7 +325,7 @@ const ShiftReport = () => {
                                             <Td>
                                                 {item.diaDetails?.map((d, idx) => (
                                                     <span key={idx}>
-                                                        {d.diameter} * {d.length} * {d.thickness}
+                                                        {d.od} * {d.length} * {d.thickness}
                                                         {idx !== item.diaDetails.length - 1 && <br />}
                                                     </span>
                                                 ))}
