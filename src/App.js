@@ -14,10 +14,10 @@ const MaintenancePage = lazy(() => import('./components/MaintenancePage.js'));
 
 const ProtectedRoute = ({ allowedRoles, children }) => {
   const user = useAuth();
-  if (!user || !allowedRoles.includes(user.role)) {
-    return <Box width={'full'}><Text color={'red'}>Access Denied</Text></Box>;
+  if (!user) return;
+  if (!allowedRoles.includes(user.role)) {
+    return <Box width={'full'} mt={100} display={'flex'} justifyContent={'center'}><Text color={'red'}>Access Denied</Text></Box>;
   }
-
   return children;
 };
 
@@ -38,7 +38,7 @@ function App() {
                 <Route
                   path="/production"
                   element={
-                    <ProtectedRoute allowedRoles={['operator', 'admin', 'manager']}>
+                    <ProtectedRoute allowedRoles={['admin', 'manager']}>
                       <ProductionForm />
                     </ProtectedRoute>
                   }
@@ -46,12 +46,17 @@ function App() {
                 <Route
                   path="/shift-report"
                   element={
-                    // <ProtectedRoute allowedRoles={['operator', 'admin', 'manager']}>
-                    <ShiftReport />
-                    // </ProtectedRoute>
+                    <ProtectedRoute allowedRoles={['operator', 'admin', 'manager']}>
+                      <ShiftReport />
+                    </ProtectedRoute>
                   }
                 />
-                <Route path="/maintenance" element={<MaintenancePage />} />
+                <Route path="/maintenance"
+                  element={
+                    <ProtectedRoute allowedRoles={['operator', 'admin', 'manager']}>
+                      <MaintenancePage />
+                    </ProtectedRoute>
+                  } />
               </Routes>
             </Box>
           </Suspense>

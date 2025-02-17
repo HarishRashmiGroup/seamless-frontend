@@ -15,6 +15,7 @@ import {
     RadioGroup,
     Radio,
     IconButton,
+    Spinner,
 } from '@chakra-ui/react';
 import { CirclePlusIcon, Trash2Icon } from "lucide-react";
 import BreakdownDetails from "./BreakDownDetails";
@@ -29,6 +30,7 @@ export const HourlyProductionForm = () => {
     const [input, setInput] = useState();
     const [searchParams, setSearchParams] = useSearchParams();
     const [isLoading, setIsLoading] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
     const [initialValues] = useMemo(() => {
         const machineParam = searchParams.get('machine');
         const dateParam = searchParams.get('date');
@@ -51,6 +53,7 @@ export const HourlyProductionForm = () => {
     const [rootCauses, setRootCauses] = useState([]);
     const [departments, setDepartments] = useState([]);
     const [types, setTypes] = useState([]);
+    const [token, setToken] = useState(localStorage.getItem('token'));
 
     const [formData, setFormData] = useState({
         id: null,
@@ -131,10 +134,12 @@ export const HourlyProductionForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setIsSaving(true);
         try {
             const response = await axios.post(formData.id ? `https://seamless-backend-nz7d.onrender.com/hourly/prod/${formData.id}` : 'https://seamless-backend-nz7d.onrender.com/hourly/prod', formData, {
                 headers: {
                     'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
                 },
             });
             if (response.status === 201) {
@@ -143,7 +148,7 @@ export const HourlyProductionForm = () => {
                     ...response.data.formData
                 }));
                 toast({
-                    // title: "Form Submitted",
+                    title: "Form Submitted",
                     description: response.data.message,
                     status: "success",
                     duration: 5000,
@@ -159,6 +164,8 @@ export const HourlyProductionForm = () => {
                 duration: 5000,
                 isClosable: true,
             });
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -248,9 +255,15 @@ export const HourlyProductionForm = () => {
     const fetchProductionData = async (machineId, date, shiftId) => {
         setIsLoading(true);
         try {
-            const response = await fetch(`https://seamless-backend-nz7d.onrender.com/hourly/prod?machineId=${machineId}&date=${date}&shiftId=${shiftId}`);
-            if (response.ok) {
-                const data = await response.json();
+            const response = await axios.get(`https://seamless-backend-nz7d.onrender.com/hourly/prod?machineId=${machineId}&date=${date}&shiftId=${shiftId}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+            if (response.status === 200) {
+                const data = response.data;
                 setFormData(prevData => ({
                     ...prevData,
                     ...data
@@ -619,8 +632,17 @@ export const HourlyProductionForm = () => {
                     </Box>
 
                     {/* Submit Button */}
-                    <Button type="submit" colorScheme="blue" width="full" mt={6} display={user.role === 'maintenance' ? 'none' : 'auto'} isLoading={isLoading}>
-                        {formData.id ? "Update" : "Record"} Production Data
+                    <Button
+                        type="submit"
+                        colorScheme="blue"
+                        width="full"
+                        mt={6}
+                        display={user?.role === 'maintenance' ? 'none' : 'auto'}
+                        isLoading={isSaving}
+                        loadingText=""
+                        spinner={<Spinner size="sm" />}
+                    >
+                        {formData.id ? "Update Production Data" : "Record Production Data"}
                     </Button>
                 </VStack>
             </form>

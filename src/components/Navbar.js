@@ -125,7 +125,7 @@ const Navbar = () => {
                                 variant="solid"
                                 onClick={() => navigate('/shift-report')}
                             >
-                                Hourly Report
+                                Shift Report
                             </Button>
                             <Button
                                 leftIcon={<Icon as={LogOut} w={5} h={5} />}

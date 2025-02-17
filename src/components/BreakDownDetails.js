@@ -19,6 +19,7 @@ import axios from "axios";
 const BreakdownDetails = ({ breakdownDetails, rootCauses, departments, breakdownTypes, onChange, onAdd, onRemove, needRefresh }) => {
     const user = useAuth();
     const toast = useToast();
+    const token = useState(localStorage.getItem('token'));
 
     const calculateDuration = (startTime, endTime) => {
         if (!startTime || !endTime) return '';
@@ -60,6 +61,7 @@ const BreakdownDetails = ({ breakdownDetails, rootCauses, departments, breakdown
             const response = await axios.post('https://seamless-backend-nz7d.onrender.com/hourly/breakdown', formData, {
                 headers: {
                     'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
                 },
             });
             if (response.status === 201) {
@@ -92,7 +94,7 @@ const BreakdownDetails = ({ breakdownDetails, rootCauses, departments, breakdown
                 <Box width={"full"} bg={'white'} p={2} mb={1} key={index} borderRadius={'md'}>
                     <Stack direction={{ base: "column", md: "row" }} spacing={4} mb={2}>
                         <Stack direction={{ base: "row", md: "column" }} gap={{ base: "4px", md: "auto" }}>
-                            <FormControl isReadOnly={user.role != 'operator' && breakdown.id}>
+                            <FormControl isReadOnly={user?.role != 'operator' && breakdown.id}>
                                 <FormLabel>B.D. Time</FormLabel>
                                 <Input
                                     placeholder="From"
@@ -109,7 +111,7 @@ const BreakdownDetails = ({ breakdownDetails, rootCauses, departments, breakdown
                                 onChange={(e) => handleBreakdownChange(index, 'endTime', e.target.value)}
                                 type="time"
                                 required
-                                isReadOnly={user.role != 'operator' && breakdown.id}
+                                isReadOnly={user?.role != 'operator' && breakdown.id}
                             />
                         </Stack>
                         <FormControl>
@@ -164,7 +166,7 @@ const BreakdownDetails = ({ breakdownDetails, rootCauses, departments, breakdown
                             size="sm"
                         />
                     </Stack>
-                    {user.role != 'operator' && (<>
+                    {user?.role != 'operator' && (<>
                         <Stack direction={{ base: "column", md: "row" }} mt={2} spacing={4}>
                             <FormControl >
                                 <FormLabel>Name of Equipment</FormLabel>

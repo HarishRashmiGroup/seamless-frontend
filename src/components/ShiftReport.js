@@ -30,8 +30,9 @@ import {
     useBreakpointValue,
     Input,
     Image,
+    Icon,
 } from "@chakra-ui/react";
-import { ChevronLeftIcon, ChevronRightIcon, FilesIcon } from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon, FilesIcon, } from "lucide-react";
 import FullScreenLoader from "./FullScreenLoader";
 import axios from "axios";
 import { useSearchParams } from "react-router-dom";
@@ -254,12 +255,12 @@ const ShiftReport = () => {
             {operatorInfo && (<>
                 <Card mb={6}>
                     <CardBody>
-                        <Grid templateColumns="repeat(3, 1fr)" gap={6}>
+                        <Grid templateColumns= "repeat(3, 1fr)" gap={6}>
                             <GridItem>
                                 <VStack align="start" spacing={1}>
                                     <Heading size="sm">Operator</Heading>
-                                    <Text>{operatorInfo.operatorName}</Text>
-                                    <Text fontSize="sm" color="gray.600">{operatorInfo.operatorPhoneNo}</Text>
+                                    <Text >{operatorInfo.operatorName}</Text>
+                                    <Text >{operatorInfo.operatorPhoneNo}</Text>
                                 </VStack>
                             </GridItem>
                             <GridItem>
