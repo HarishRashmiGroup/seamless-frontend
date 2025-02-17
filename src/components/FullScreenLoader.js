@@ -14,7 +14,7 @@ const FullScreenLoader = ({ isLoading }) => {
             alignItems="center"
             justifyContent="center"
             backgroundColor="rgba(0, 0, 0, 0.3)"
-            zIndex={9999}
+            zIndex={100}
         >
             <Spinner size="xl" color="white" />
         </Box>

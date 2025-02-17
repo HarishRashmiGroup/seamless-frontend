@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
     Box,
     Card,
@@ -34,19 +34,43 @@ import {
 import { ChevronLeftIcon, ChevronRightIcon, FilesIcon } from "lucide-react";
 import FullScreenLoader from "./FullScreenLoader";
 import axios from "axios";
+import { useSearchParams } from "react-router-dom";
 
 const ShiftReport = () => {
+    const isValidDate = (dateString) => {
+        if (!dateString) return false;
+        const date = new Date(dateString);
+        return !isNaN(date.getTime());
+    };
+
+    const [searchParams, setSearchParams] = useSearchParams();
     const [data, setData] = useState([]);
     const [operatorInfo, setOperatorInfo] = useState(null);
     const [modalData, setModalData] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
     const isMobile = useBreakpointValue({ base: true, md: false });
     const [machines, setMachines] = useState([]);
-    const [machineId, setMachineId] = useState(1);
-    const [shiftLetter, setShiftLetter] = useState('A');
+    const [machineId, setMachineId] = useState(parseInt(searchParams.get('machineId')) || 1);
+    const [shiftLetter, setShiftLetter] = useState(searchParams.get('shiftLetter') || 'A');
     const toast = useToast();
-    const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+    const [date, setDate] = useState(isValidDate(searchParams.get('date')) ? searchParams.get('date') : new Date().toISOString().split("T")[0]);
     const [isLoading, setIsLoading] = useState(false);
+
+    const [initialValues] = useMemo(() => {
+        const machineParam = searchParams.get('machineId');
+        const dateParam = searchParams.get('date');
+        const shiftParam = searchParams.get('shiftLetter');
+
+        const validDate = dateParam && !isNaN(new Date(dateParam).getTime())
+            ? dateParam
+            : new Date().toISOString().split('T')[0];
+
+        return [{
+            machineId: machineParam || 1,
+            date: validDate,
+            shiftLetter: shiftParam || 'A',
+        }];
+    }, [searchParams]);
 
     const changeDate = (days) => {
         const currentDate = date ? new Date(date) : new Date();
@@ -100,12 +124,20 @@ const ShiftReport = () => {
             .finally(() => setIsLoading(false));
     };
 
-
     useEffect(() => {
         fetchMachines();
     }, []);
 
     useEffect(() => {
+        const validDate = date && !isNaN(new Date(date).getTime())
+            ? date
+            : new Date().toISOString().split('T')[0];
+        setSearchParams({
+            machineId: machineId,
+            date: validDate,
+            shiftLetter: shiftLetter
+        });
+        if (validDate != date) { setDate(validDate); return; };
         setOperatorInfo(null);
         fetchShiftReport()
     }, [machineId, shiftLetter, date])

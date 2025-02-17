@@ -58,6 +58,10 @@ export const MaintenancePage = () => {
         navigate(`/hourly?machine=${machineId}&date=${date}&shift=${Number(shiftId)}`);
     };
 
+    const shiftClick = (shiftLetter) => {
+        navigate(`/shift-report?machineId=${machineId}&date=${date}&shiftLetter=${shiftLetter}`);
+    }
+
     const cardBg = useColorModeValue('white', 'gray.800');
     const borderColor = useColorModeValue('gray.200', 'gray.700');
 
@@ -184,7 +188,7 @@ export const MaintenancePage = () => {
                         const timeSlots = shift === 'A' ? aShifts : shift === 'B' ? bShifts : cShifts;
                         return (
                             <Box key={shift}>
-                                <Text textAlign="left" fontSize="xl" mb={4}>
+                                <Text _hover={{ color: "blue.400" }} textAlign="left" fontSize="xl" mb={4} cursor={'pointer'} onClick={() => shiftClick(shift)}>
                                     Shift {shift}
                                 </Text>
                                 <SimpleGrid

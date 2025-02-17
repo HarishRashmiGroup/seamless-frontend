@@ -1,121 +1,157 @@
 import { useState, useEffect } from "react";
 import {
-  Button,
-  Input,
-  FormLabel,
-  VStack,
-  Box,
-  useBreakpointValue,
-  Spinner,
-  Flex,
-  useColorModeValue,
-  Text,
+    Button,
+    Input,
+    FormLabel,
+    VStack,
+    Box,
+    useBreakpointValue,
+    Spinner,
+    Flex,
+    useColorModeValue,
+    Text,
+    useToast,
 } from "@chakra-ui/react";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function LoginPage() {
-  const [loginId, setLoginId] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [bgImage, setBgImage] = useState("/seamless1.jpeg");
+    const toast = useToast();
+    const navigate = useNavigate();
+    const [loginId, setLoginId] = useState("");
+    const [password, setPassword] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+    const [bgImage, setBgImage] = useState("/seamless1.jpeg");
 
-  const images = [
-    "/seamless1.jpeg",
-    "/seamless2.jpeg",
-    "/seamless3.jpeg",
-  ];
+    const images = [
+        "/seamless1.jpeg",
+        "/seamless2.jpeg",
+        "/seamless3.jpeg",
+    ];
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setBgImage((prev) => {
-        const nextIndex = (images.indexOf(prev) + 1) % images.length;
-        return images[nextIndex];
-      });
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setBgImage((prev) => {
+                const nextIndex = (images.indexOf(prev) + 1) % images.length;
+                return images[nextIndex];
+            });
+        }, 3000);
+        return () => clearInterval(interval);
+    }, []);
 
-  const boxWidth = useBreakpointValue({ base: "90%", md: "400px" });
-  const formBg = useColorModeValue("white", "gray.700");
+    const boxWidth = useBreakpointValue({ base: "90%", md: "400px" });
+    const formBg = useColorModeValue("white", "gray.700");
 
-  const handleLogin = () => {
-    if (loginId && password) {
-      setIsLoading(true);
-      setTimeout(() => {
-        setIsLoading(false);
-        alert("Login successful!");
-      }, 2000);
-    } else {
-      alert("Please fill in all fields");
-    }
-  };
+    const handleLogin = async () => {
+        if (!loginId || !password) {
+            alert("Please fill in all fields");
+            return;
+        }
 
-  return (
-    <Box position="relative" w="100vw" h="100vh" mt="-82px" overflow="hidden">
-      <Box
-        position="absolute"
-        top="0"
-        left="0"
-        w="full"
-        h="full"
-        bgImage={`url(${bgImage})`}
-        bgSize="cover"
-        bgPosition="center"
-        transition="background 1.5s ease-in-out"
-        zIndex="0"
-      />
+        setIsLoading(true);
 
-      <Box position="absolute" top="0" left="0" w="full" h="full" bg="blackAlpha.600" zIndex="1" />
+        try {
+            const response = await axios.post("https://seamless-backend-nz7d.onrender.com/user/log-in", {
+                userName: loginId,
+                passkey: password,
+            });
+            if (response.status === 201) {
+                localStorage.setItem("token", response.data.token);
+                navigate('/');
+            }
+        } catch (error) {
+            toast({
+                title: "Login Failed",
+                // description: response.data.message,
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
-      <Flex position="relative" w="full" h="full" align="center" justify="center" zIndex="3">
-        <Box
-          w={boxWidth}
-          p={6}
-          bg={formBg}
-          bgOpacity="0.8"
-          backdropFilter="blur(10px)"
-          borderRadius="lg"
-          boxShadow="xl"
-          borderWidth="1px"
-          borderColor="whiteAlpha.300"
-        >
-          <Text fontSize="2xl" fontWeight="bold" textAlign="center" mb="6" color="blue.600">
-            Rashmi Seamless
-          </Text>
+    const handleKeyDown = (event) => {
+        if (event.key === "Enter") {
+            handleLogin();
+        }
+    };
 
-          <VStack spacing={4} align="stretch">
-            <Box>
-              <FormLabel>Login ID</FormLabel>
-              <Input
-                value={loginId}
-                onChange={(e) => setLoginId(e.target.value)}
-                placeholder="Enter your login ID"
-                bg="whiteAlpha.900"
-              />
-            </Box>
 
-            <Box>
-              <FormLabel>Password</FormLabel>
-              <Input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                bg="whiteAlpha.900"
-              />
-            </Box>
+    return (
+        <Box position="relative" w="100vw" h="100vh" mt="-82px" overflow="hidden">
+            <Box
+                position="absolute"
+                top="0"
+                left="0"
+                w="full"
+                h="full"
+                bgImage={`url(${bgImage})`}
+                bgSize="cover"
+                bgPosition="center"
+                transition="background 1.5s ease-in-out"
+                zIndex="0"
+            />
 
-            <Button
-              colorScheme="blue"
-              onClick={handleLogin}
-              isLoading={isLoading}
-              loadingText="Signing In"
-              spinner={<Spinner size="sm" />}
-            >
-              Sign In
-            </Button>
-          </VStack>
+            <Box position="absolute" top="0" left="0" w="full" h="full" bg="blackAlpha.600" zIndex="1" />
+
+            <Flex position="relative" w="full" h="full" align="center" justify="center" zIndex="3">
+                <Box
+                    w={boxWidth}
+                    p={6}
+                    bg={formBg}
+                    bgopacity="0.8"
+                    backdropFilter="blur(10px)"
+                    borderRadius="lg"
+                    boxShadow="xl"
+                    borderWidth="1px"
+                    borderColor="whiteAlpha.300"
+                >
+                    <Text fontSize="2xl" fontWeight="bold" textAlign="center" mb="6" color="blue.600" userSelect={'none'}>
+                        Rashmi Seamless
+                    </Text>
+
+                    <VStack spacing={4} align="stretch">
+                        <Box>
+                            <FormLabel userSelect={'none'}>Login ID</FormLabel>
+                            <Input
+                                value={loginId}
+                                onChange={(e) => setLoginId(e.target.value)}
+                                placeholder="Enter your login ID"
+                                bg="whiteAlpha.900"
+                                onKeyDown={handleKeyDown}
+                            />
+                        </Box>
+
+                        <Box>
+                            <FormLabel userSelect={'none'}>Password</FormLabel>
+                            <Input
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="••••••••"
+                                bg="whiteAlpha.900"
+                                onKeyDown={handleKeyDown}
+                                onCopy={(e) => e.preventDefault()}
+                                onCut={(e) => e.preventDefault()}
+                                onPaste={(e) => e.preventDefault()}
+                            />
+                        </Box>
+
+                        <Button
+                            colorScheme="blue"
+                            onClick={handleLogin}
+                            isLoading={isLoading}
+                            loadingText="Signing In"
+                            spinner={<Spinner size="sm" />}
+                        >
+                            Sign In
+                        </Button>
+                    </VStack>
+                </Box>
+            </Flex>
         </Box>
-      </Flex>
-    </Box>
-  );
+    );
 }
