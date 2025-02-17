@@ -82,7 +82,7 @@ const ShiftReport = () => {
     };
     const fetchShiftReport = () => {
         setIsLoading(true);
-        fetch(`http://localhost:3000/hourly/shift?date=${date}&machineId=${machineId}&shift=${shiftLetter}`)
+        fetch(`https://seamless-backend-nz7d.onrender.com/hourly/shift?date=${date}&machineId=${machineId}&shift=${shiftLetter}`)
             .then((response) => response.json())
             .then((data) => {
                 setData(data.list);
