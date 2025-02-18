@@ -46,14 +46,14 @@ function App() {
                 <Route
                   path="/shift-report"
                   element={
-                    <ProtectedRoute allowedRoles={['operator', 'admin', 'manager']}>
+                    <ProtectedRoute allowedRoles={['head', 'admin']}>
                       <ShiftReport />
                     </ProtectedRoute>
                   }
                 />
                 <Route path="/maintenance"
                   element={
-                    <ProtectedRoute allowedRoles={['operator', 'admin', 'manager']}>
+                    <ProtectedRoute allowedRoles={['maintenance', 'admin', 'head']}>
                       <MaintenancePage />
                     </ProtectedRoute>
                   } />
