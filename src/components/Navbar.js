@@ -50,7 +50,7 @@ const Navbar = () => {
             left={0}
             right={0}
             zIndex={1000}
-            height="85px"
+            height="80px"
             transition="top 0.3s"
             alignItems={'center'}
         >
@@ -58,7 +58,8 @@ const Navbar = () => {
                 {/* Logo on the Left */}
                 <Flex display={{ base: "flex", md: "none" }}></Flex>
                 <Image
-                    src='https://blackbucks-media.s3.ap-south-1.amazonaws.com/Rashmi%20group%20logo%20White%20Bar-1738846415526.png'
+                    src = "https://www.rashmiseamless.com/wp-content/uploads/2022/06/RASHMI-Group-white.png"
+                    // src='https://blackbucks-media.s3.ap-south-1.amazonaws.com/Rashmi%20group%20logo%20White%20Bar-1738846415526.png'
                     alt="Rashmi"
                     maxWidth="170px"
                     objectFit="contain"

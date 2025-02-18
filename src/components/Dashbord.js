@@ -27,7 +27,7 @@ export const Dashboard = () => {
         remarks: "Additional remarks can go here and might be lengthy too.",
     },
     {
-        machine: "HOT MEAL-2",
+        machine: "HOT MILL-2",
         status: [
             'A', 'B', 'C'
         ],
@@ -50,7 +50,7 @@ export const Dashboard = () => {
         remarks: "Additional remarks can go here and might be lengthy too.",
     },
     {
-        machine: "HOT MEAL-3",
+        machine: "HOT MILL-3",
         status: [
             'A', 'B', 'C'
         ],
@@ -73,7 +73,7 @@ export const Dashboard = () => {
         remarks: "Additional remarks can go here and might be lengthy too.",
     },
     {
-        machine: "HOT MEAL SubTotal",
+        machine: "HOT MILL SubTotal",
         status: [
 
         ],
@@ -96,7 +96,7 @@ export const Dashboard = () => {
         remarks: "",
     },
     {
-        machine: "HOT MEAL-1",
+        machine: "HOT MILL-1",
         status:
             [
                 'A', 'B', 'C'
@@ -120,7 +120,7 @@ export const Dashboard = () => {
         remarks: "Additional remarks can go here and might be lengthy too.",
     },
     {
-        machine: "HOT MEAL-2",
+        machine: "HOT MILL-2",
         status: [
             'A', 'B', 'C'
         ],
@@ -143,7 +143,7 @@ export const Dashboard = () => {
         remarks: "Additional remarks can go here and might be lengthy too.",
     },
     {
-        machine: "HOT MEAL-3",
+        machine: "HOT MILL-3",
         status: [
             'A', 'B', 'C'
         ],
@@ -166,7 +166,7 @@ export const Dashboard = () => {
         remarks: "Additional remarks can go here and might be lengthy too.",
     },
     {
-        machine: "HOT MEAL SubTotal",
+        machine: "HOT MILL SubTotal",
         status: [
 
         ],
@@ -189,7 +189,7 @@ export const Dashboard = () => {
         remarks: "",
     },
     {
-        machine: "HOT MEAL-1",
+        machine: "HOT MILL-1",
         status:
             [
                 'A', 'B', 'C'
@@ -213,7 +213,7 @@ export const Dashboard = () => {
         remarks: "Additional remarks can go here and might be lengthy too.",
     },
     {
-        machine: "HOT MEAL-2",
+        machine: "HOT MILL-2",
         status: [
             'A', 'B', 'C'
         ],
@@ -236,7 +236,7 @@ export const Dashboard = () => {
         remarks: "Additional remarks can go here and might be lengthy too.",
     },
     {
-        machine: "HOT MEAL-3",
+        machine: "HOT MILL-3",
         status: [
             'A', 'B', 'C'
         ],
@@ -259,7 +259,7 @@ export const Dashboard = () => {
         remarks: "Additional remarks can go here and might be lengthy too.",
     },
     {
-        machine: "HOT MEAL SubTotal",
+        machine: "HOT MILL SubTotal",
         status: [
 
         ],
@@ -282,7 +282,7 @@ export const Dashboard = () => {
         remarks: "",
     },
     {
-        machine: "HOT MEAL-1",
+        machine: "HOT MILL-1",
         status:
             [
                 'A', 'B', 'C'
@@ -306,7 +306,7 @@ export const Dashboard = () => {
         remarks: "Additional remarks can go here and might be lengthy too.",
     },
     {
-        machine: "HOT MEAL-2",
+        machine: "HOT MILL-2",
         status: [
             'A', 'B', 'C'
         ],
@@ -329,7 +329,7 @@ export const Dashboard = () => {
         remarks: "Additional remarks can go here and might be lengthy too.",
     },
     {
-        machine: "HOT MEAL-3",
+        machine: "HOT MILL-3",
         status: [
             'A', 'B', 'C'
         ],
@@ -352,7 +352,7 @@ export const Dashboard = () => {
         remarks: "Additional remarks can go here and might be lengthy too.",
     },
     {
-        machine: "HOT MEAL SubTotal",
+        machine: "HOT MILL SubTotal",
         status: [
 
         ],
@@ -375,7 +375,7 @@ export const Dashboard = () => {
         remarks: "",
     },
     {
-        machine: "HOT MEAL-1",
+        machine: "HOT MILL-1",
         status:
             [
                 'A', 'B', 'C'
@@ -399,7 +399,7 @@ export const Dashboard = () => {
         remarks: "Additional remarks can go here and might be lengthy too.",
     },
     {
-        machine: "HOT MEAL-2",
+        machine: "HOT MILL-2",
         status: [
             'A', 'B', 'C'
         ],
@@ -422,7 +422,7 @@ export const Dashboard = () => {
         remarks: "Additional remarks can go here and might be lengthy too.",
     },
     {
-        machine: "HOT MEAL-3",
+        machine: "HOT MILL-3",
         status: [
             'A', 'B', 'C'
         ],
@@ -445,7 +445,7 @@ export const Dashboard = () => {
         remarks: "Additional remarks can go here and might be lengthy too.",
     },
     {
-        machine: "HOT MEAL SubTotal",
+        machine: "HOT MILL SubTotal",
         status: [
 
         ],
@@ -468,7 +468,7 @@ export const Dashboard = () => {
         remarks: "",
     },
     {
-        machine: "HOT MEAL-1",
+        machine: "HOT MILL-1",
         status:
             [
                 'A', 'B', 'C'
@@ -492,7 +492,7 @@ export const Dashboard = () => {
         remarks: "Additional remarks can go here and might be lengthy too.",
     },
     {
-        machine: "HOT MEAL-2",
+        machine: "HOT MILL-2",
         status: [
             'A', 'B', 'C'
         ],
@@ -515,7 +515,7 @@ export const Dashboard = () => {
         remarks: "Additional remarks can go here and might be lengthy too.",
     },
     {
-        machine: "HOT MEAL-3",
+        machine: "HOT MILL-3",
         status: [
             'A', 'B', 'C'
         ],
@@ -538,7 +538,7 @@ export const Dashboard = () => {
         remarks: "Additional remarks can go here and might be lengthy too.",
     },
     {
-        machine: "HOT MEAL SubTotal",
+        machine: "HOT MILL SubTotal",
         status: [
 
         ],
