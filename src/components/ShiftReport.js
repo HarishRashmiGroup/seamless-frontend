@@ -87,6 +87,7 @@ const ShiftReport = () => {
     }
 
     const fetchMachines = async () => {
+        setIsLoading(true);
         try {
             const response = await axios.get('https://seamless-backend-nz7d.onrender.com/basic/machines');
 
@@ -103,6 +104,8 @@ const ShiftReport = () => {
                 duration: 5000,
                 isClosable: true,
             });
+        } finally {
+            setIsLoading(false);
         }
     };
     const fetchShiftReport = () => {
@@ -255,7 +258,7 @@ const ShiftReport = () => {
             {operatorInfo && (<>
                 <Card mb={6}>
                     <CardBody>
-                        <Grid templateColumns= "repeat(3, 1fr)" gap={6}>
+                        <Grid templateColumns="repeat(3, 1fr)" gap={6}>
                             <GridItem>
                                 <VStack align="start" spacing={1}>
                                     <Heading size="sm">Operator</Heading>

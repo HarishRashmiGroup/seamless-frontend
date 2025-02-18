@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
     Box,
     Text,
@@ -24,6 +24,8 @@ import FullScreenLoader from "./FullScreenLoader";
 export const MaintenancePage = () => {
     const user = useAuth();
     const toast = useToast();
+    const [requestId, setRequestId] = useState(0);
+    const abortControllerRef = useRef(null);
     const navigate = useNavigate();
     const shifts = ['A', 'B', 'C'];
     const [machines, setMachines] = useState([]);
@@ -56,17 +58,6 @@ export const MaintenancePage = () => {
                         "gray.200";
         }
         return "gray.200";
-    };
-
-    const getTextColor = (shiftId) => {
-        if (shiftStatus?.has(String(shiftId))) {
-            const status = shiftStatus.get(String(shiftId));
-            return status === 2 ? "text.red.800" :
-                status === 1 ? "green.800" :
-                    status === 0 ? "yellow.800" :
-                        "gray.800";
-        }
-        return "gray.800";
     };
 
     const handleClick = (shiftId) => {
@@ -133,9 +124,57 @@ export const MaintenancePage = () => {
         }
     };
 
-    const fetchColors = async (machineId, date, token, controller) => {
-        const signal = controller.signal;
+    // const fetchColors = async (machineId, date, token, controller) => {
+    //     const signal = controller.signal;
 
+    //     try {
+    //         setShiftStatus(new Map());
+
+    //         const response = await axios.get(
+    //             `https://seamless-backend-nz7d.onrender.com/hourly/colors?machineId=${machineId}&date=${date}`,
+    //             {
+    //                 headers: {
+    //                     Authorization: `Bearer ${token}`,
+    //                 },
+    //                 signal: signal,
+    //             }
+    //         );
+
+    //         if (response.status === 200) {
+    //             if (response.data && response.data.map) {
+    //                 setShiftStatus(new Map(Object.entries(response.data.map)));
+    //             } else {
+    //                 setShiftStatus(new Map());
+    //             }
+    //         } else {
+    //             throw new Error("Unexpected response status");
+    //         }
+    //     } catch (error) {
+    //         if (error.name === "AbortError") {
+    //             console.log(`Request aborted for machineId: ${machineId} on date: ${date}`);
+    //         } else {
+    //             console.error("Request failed:", error);
+    //             toast({
+    //                 title: "Error",
+    //                 description: error?.response?.data?.message || "Failed to fetch approved status.",
+    //                 status: "error",
+    //                 duration: 5000,
+    //                 isClosable: true,
+    //             });
+    //         }
+    //     }
+    // };
+
+    const fetchColors = async (machineId, date, token, reqId) => {
+        setShiftStatus(new Map());
+        
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
+        }
+        
+        const controller = new AbortController();
+        abortControllerRef.current = controller;
+        
         try {
             const response = await axios.get(
                 `https://seamless-backend-nz7d.onrender.com/hourly/colors?machineId=${machineId}&date=${date}`,
@@ -143,37 +182,42 @@ export const MaintenancePage = () => {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
-                    signal: signal,
+                    signal: controller.signal,
                 }
             );
 
-            if (response.status === 200) {
-                if (!signal.aborted) {
+            if (abortControllerRef.current === controller) {
+                
+                if (response.status === 200) {
                     if (response.data && response.data.map) {
                         setShiftStatus(new Map(Object.entries(response.data.map)));
                     } else {
                         setShiftStatus(new Map());
-                        console.log('aborted');
                     }
+                } else {
+                    throw new Error("Unexpected response status");
                 }
             } else {
-                throw new Error("Unexpected response status");
+                console.log(`Ignored results from request #${reqId} as it's no longer current`);
             }
         } catch (error) {
-            if (error.code === "ERR_CANCELED") {
-                console.log(`Request aborted for machineId: ${machineId} and date: ${date}`);
+            if (error.name === "AbortError") {
+                console.log(`Request #${reqId} was aborted`);
             } else {
-                toast({
-                    title: "Error",
-                    description: error?.response?.data?.message || "Failed to fetch approved status.",
-                    status: "error",
-                    duration: 5000,
-                    isClosable: true,
-                });
+                if (abortControllerRef.current === controller) {
+                    toast({
+                        title: "Error",
+                        description: error?.response?.data?.message || "Failed to fetch approved status.",
+                        status: "error",
+                        duration: 5000,
+                        isClosable: true,
+                    });
+                } else {
+                    console.log(`Ignored error from request #${reqId} as it's no longer current`);
+                }
             }
         }
     };
-
     useEffect(() => {
         const loadInitialData = async () => {
             setIsLoading(true);
@@ -193,14 +237,25 @@ export const MaintenancePage = () => {
         const flag = date && !isNaN(new Date(date).getTime()) && machineId && !isNaN(Number(machineId));
 
         if (flag) {
-            const controller = new AbortController();
-            setShiftStatus(new Map());
-            fetchColors(machineId, date, token, controller);
-            return () => {
-                controller.abort();
-            };
+            setRequestId(prevId => {
+                const newId = prevId + 1;
+                fetchColors(machineId, date, token, newId);
+                return newId;
+            });
         }
+
+        return () => {
+        };
     }, [machineId, date, token]);
+
+    useEffect(() => {
+        return () => {
+            if (abortControllerRef.current) {
+                console.log("Component unmounting - aborting any pending requests");
+                abortControllerRef.current.abort();
+            }
+        };
+    }, []);
 
     if (isLoading) {
         return <FullScreenLoader isLoading={isLoading} />;
@@ -281,7 +336,6 @@ export const MaintenancePage = () => {
                                         <Button
                                             key={`${shift}-${slot.id}`}
                                             bg={getColor(slot.id)}
-                                            color={getTextColor(slot.id)}
                                             size="sm"
                                             height="auto"
                                             py={2}

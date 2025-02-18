@@ -166,98 +166,105 @@ const BreakdownDetails = ({ breakdownDetails, rootCauses, departments, breakdown
                             size="sm"
                         />
                     </Stack>
-                    {user?.role != 'operator' && (<>
-                        <Stack direction={{ base: "column", md: "row" }} mt={2} spacing={4}>
-                            <FormControl >
-                                <FormLabel>Name of Equipment</FormLabel>
-                                <Input
-                                    placeholder="Name of Equipment"
-                                    value={breakdown.nameOfEquipment ?? ''}
-                                    onChange={(e) => handleBreakdownChange(index, 'nameOfEquipment', e.target.value)}
-                                    disabled={breakdown.id == null}
-                                />
-                            </FormControl>
-                            <FormControl>
-                                <FormLabel>Root Cause</FormLabel>
-                                <Select
-                                    placeholder="Root Cause"
-                                    value={breakdown.rootCauseId ?? ''}
-                                    onChange={(e) => handleBreakdownChange(index, 'rootCauseId', Number(e.target.value))}
-                                    disabled={breakdown.id == null}
-                                >
-                                    {rootCauses.map((rc) => (
-                                        <option key={rc.id} value={rc.id}>
-                                            {rc.label}
-                                        </option>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                        </Stack>
-                        <Stack direction={{ base: "column", md: "row" }} mt={2} spacing={4}>
-                            <FormControl>
-                                <FormLabel>Temporary Solution</FormLabel>
-                                <Textarea
-                                    name="tempSolution"
-                                    value={breakdown.tempSolution ?? ''}
-                                    onChange={(e) => handleBreakdownChange(index, 'tempSolution', e.target.value)}
-                                    placeholder="Temporary Solution for the Breakdown"
-                                    disabled={breakdown.id == null}
-                                />
-                            </FormControl>
-                            <FormControl>
-                                <FormLabel>Permanent Solution</FormLabel>
-                                <Textarea
-                                    name="permanentSolution"
-                                    value={breakdown.permanentSolution ?? ''}
-                                    onChange={(e) => handleBreakdownChange(index, 'permanentSolution', e.target.value)}
-                                    placeholder="Permanent Solution for the Breakdown"
-                                    disabled={breakdown.id == null}
-                                />
-                            </FormControl>
-                        </Stack>
-                        <Stack direction={{ base: "column", md: "row" }} mt={2} spacing={4}>
-                            <FormControl>
-                                <FormLabel>Action Plan</FormLabel>
-                                <Textarea
-                                    name="actionPlan"
-                                    value={breakdown.actionPlan ?? ''}
-                                    onChange={(e) => handleBreakdownChange(index, 'actionPlan', e.target.value)}
-                                    placeholder="Action Plan"
-                                    disabled={breakdown.id == null}
-                                />
-                            </FormControl>
-                            <FormControl>
-                                <FormLabel>Purchase Issue</FormLabel>
-                                <Textarea
-                                    name="purchaseIssue"
-                                    value={breakdown.purchaseIssue ?? ''}
-                                    onChange={(e) => handleBreakdownChange(index, 'purchaseIssue', e.target.value)}
-                                    placeholder="Purchase Issue"
-                                    disabled={breakdown.id == null}
-                                />
-                            </FormControl>
-                        </Stack>
-                        <Stack direction={{ base: "column", md: "row" }} mt={2} spacing={4}>
-                            <FormControl>
-                                <FormLabel>TDC</FormLabel>
-                                <Input
-                                    type="date"
-                                    value={breakdown.date ?? ''}
-                                    onChange={(e) => handleBreakdownChange(index, 'date', new Date(e.target.value).toISOString().split('T')[0])}
-                                    disabled={breakdown.id == null}
-                                />
-                            </FormControl>
-                            <Box width={'full'} height={'auto'} mt={'auto'} display={'flex'} justifyContent={'flex-end'}>
-                                <Button disabled={breakdown.id == null} onClick={() => handleBDSubmit(breakdown)}>
-                                    Approve
-                                </Button>
-                            </Box>
-                        </Stack>
-                    </>
-                    )}
+                    {user?.role !== 'operator' &&
+                        (
+                            <>
+                                <Stack direction={{ base: "column", md: "row" }} mt={2} spacing={4}>
+                                    <FormControl >
+                                        <FormLabel>Name of Equipment</FormLabel>
+                                        <Input
+                                            placeholder="Name of Equipment"
+                                            value={breakdown.nameOfEquipment ?? ''}
+                                            onChange={(e) => handleBreakdownChange(index, 'nameOfEquipment', e.target.value)}
+                                            disabled={breakdown.id == null}
+                                        />
+                                    </FormControl>
+                                    <FormControl>
+                                        <FormLabel>Root Cause</FormLabel>
+                                        <Select
+                                            placeholder="Root Cause"
+                                            value={breakdown.rootCauseId ?? ''}
+                                            onChange={(e) => handleBreakdownChange(index, 'rootCauseId', Number(e.target.value))}
+                                            disabled={breakdown.id == null}
+                                        >
+                                            {rootCauses.map((rc) => (
+                                                <option key={rc.id} value={rc.id}>
+                                                    {rc.label}
+                                                </option>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                </Stack>
+                                <Stack direction={{ base: "column", md: "row" }} mt={2} spacing={4}>
+                                    <FormControl>
+                                        <FormLabel>Temporary Solution</FormLabel>
+                                        <Textarea
+                                            name="tempSolution"
+                                            value={breakdown.tempSolution ?? ''}
+                                            onChange={(e) => handleBreakdownChange(index, 'tempSolution', e.target.value)}
+                                            placeholder="Temporary Solution for the Breakdown"
+                                            disabled={breakdown.id == null}
+                                        />
+                                    </FormControl>
+                                    <FormControl>
+                                        <FormLabel>Permanent Solution</FormLabel>
+                                        <Textarea
+                                            name="permanentSolution"
+                                            value={breakdown.permanentSolution ?? ''}
+                                            onChange={(e) => handleBreakdownChange(index, 'permanentSolution', e.target.value)}
+                                            placeholder="Permanent Solution for the Breakdown"
+                                            disabled={breakdown.id == null}
+                                        />
+                                    </FormControl>
+                                </Stack>
+                                <Stack direction={{ base: "column", md: "row" }} mt={2} spacing={4}>
+                                    <FormControl>
+                                        <FormLabel>Action Plan</FormLabel>
+                                        <Textarea
+                                            name="actionPlan"
+                                            value={breakdown.actionPlan ?? ''}
+                                            onChange={(e) => handleBreakdownChange(index, 'actionPlan', e.target.value)}
+                                            placeholder="Action Plan"
+                                            disabled={breakdown.id == null}
+                                        />
+                                    </FormControl>
+                                    <FormControl>
+                                        <FormLabel>Purchase Issue</FormLabel>
+                                        <Textarea
+                                            name="purchaseIssue"
+                                            value={breakdown.purchaseIssue ?? ''}
+                                            onChange={(e) => handleBreakdownChange(index, 'purchaseIssue', e.target.value)}
+                                            placeholder="Purchase Issue"
+                                            disabled={breakdown.id == null}
+                                        />
+                                    </FormControl>
+                                </Stack>
+                                <Stack direction={{ base: "column", md: "row" }} mt={2} spacing={4}>
+                                    <FormControl>
+                                        <FormLabel>TDC</FormLabel>
+                                        <Input
+                                            type="date"
+                                            value={breakdown.date ?? ''}
+                                            onChange={(e) => handleBreakdownChange(index, 'date', new Date(e.target.value).toISOString().split('T')[0])}
+                                            disabled={breakdown.id == null}
+                                        />
+                                    </FormControl>
+                                    <Box width={'full'} height={'auto'} mt={'auto'} display={'flex'} justifyContent={'flex-end'}>
+                                        <Button disabled={breakdown.id == null} onClick={() => handleBDSubmit(breakdown)}>
+                                            Approve
+                                        </Button>
+                                    </Box>
+                                </Stack>
+                            </>
+                        )}
                 </Box>
             ))}
-            <Button onClick={onAdd} className="bg-teal-500 hover:bg-teal-600 text-white" size={'sm'}>
+            <Button
+                onClick={onAdd}
+                className="bg-teal-500 hover:bg-teal-600 text-white"
+                size={'sm'}
+                display={user?.role === 'maintenance' ? 'none' : 'auto'}
+            >
                 <CirclePlusIcon />
             </Button>
         </Box>

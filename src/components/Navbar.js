@@ -74,7 +74,7 @@ const Navbar = () => {
                     <Button leftIcon={<Icon as={WrenchIcon} w={5} h={5} />} colorScheme={location.pathname === '/maintenance' ? "blue" : "gray"} variant="solid" onClick={() => navigate('/maintenance')}>Maintenance</Button>
                     <Button leftIcon={<Icon as={ClipboardPlusIcon} w={5} h={5} />} colorScheme={location.pathname === '/hourly' ? "blue" : "gray"} variant="solid" onClick={() => navigate('/hourly')}>Hourly Report</Button>
                     <Button leftIcon={<Icon as={Clock} w={5} h={5} />} colorScheme={location.pathname === '/shift-report' ? "blue" : "gray"} variant="solid" onClick={() => navigate('/shift-report')}>Shift Report</Button>
-                    <Button leftIcon={<Icon as={LogOut} w={5} h={5} />} colorScheme="red" variant="solid" onClick={() => alert('Logging out...')}>Logout</Button>
+                    <Button leftIcon={<Icon as={LogOut} w={5} h={5} />} colorScheme="red" variant="solid" onClick={() => { localStorage.removeItem('token'); navigate('/login') }}>Logout</Button>
                 </Flex>
                 <Icon
                     as={isOpen ? X : Menu}

@@ -299,7 +299,11 @@ export const HourlyProductionForm = () => {
             date: initialValues.date,
             shiftId: initialValues.shiftId,
         }));
+        const controller = new AbortController();
         fetchShifts();
+        return () => {
+            controller.abort();
+        };
     }, [initialValues]);
 
     useEffect(() => {
@@ -637,7 +641,7 @@ export const HourlyProductionForm = () => {
                         colorScheme="blue"
                         width="full"
                         mt={6}
-                        display={user?.role === 'maintenance' ? 'none' : 'auto'}
+                        display={user?.role === 'maintenance' ? 'none' : user?.role === 'operator' && formData.id ? 'none' : 'auto'}
                         isLoading={isSaving}
                         loadingText=""
                         spinner={<Spinner size="sm" />}
