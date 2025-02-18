@@ -68,7 +68,7 @@ export const HourlyProductionForm = () => {
         shiftLetter: initialValues.shiftLetter,
         date: '',
         status: true,
-        diaDetails: [{ diameter: '', od: '', thickness: '', length: '' }],
+        diaDetails: [{ diameter: '', pcs: '', thickness: '', length: '' }],
         breakdownDetails: [],
         stdProdPerHr: '',
         actProdPerHr: '',
@@ -91,7 +91,7 @@ export const HourlyProductionForm = () => {
     const addDiaDetailsLine = () => {
         setFormData((prev) => ({
             ...prev,
-            diaDetails: [...prev.diaDetails, { diameter: '', od: '', thickness: '', length: '' }],
+            diaDetails: [...prev.diaDetails, { diameter: '', pcs: '', thickness: '', length: '' }],
         }));
     };
 
@@ -486,18 +486,18 @@ export const HourlyProductionForm = () => {
                             <Stack p={1} key={index} direction={{ base: "column", md: "row" }} spacing={4} mb={1}>
                                 <Input
                                     bg={'white'}
-                                    placeholder="Diameter"
+                                    placeholder="No of Pcs"
                                     value={detail.diameter ?? ''}
-                                    onChange={(e) => handleDiaDetailsChange(index, 'diameter', e.target.value)}
+                                    onChange={(e) => handleDiaDetailsChange(index, 'nos', e.target.value)}
                                     type="number"
                                     onWheel={(e) => e.target.blur()}
                                     required
                                 />
                                 <Input
                                     bg={'white'}
-                                    placeholder="OD"
-                                    value={detail.od ?? ''}
-                                    onChange={(e) => handleDiaDetailsChange(index, 'od', e.target.value)}
+                                    placeholder="Diameter"
+                                    value={detail.diameter ?? ''}
+                                    onChange={(e) => handleDiaDetailsChange(index, 'diameter', e.target.value)}
                                     type="number"
                                     onWheel={(e) => e.target.blur()}
                                     required
@@ -589,20 +589,20 @@ export const HourlyProductionForm = () => {
                         </Stack>
                         <Stack direction={{ base: "column", md: "row" }} spacing={4} mt={4}>
                             <FormControl disabled>
-                                <FormLabel userSelect={'none'}>Difference(MT)</FormLabel>
+                                <FormLabel userSelect={'none'}>Difference(Pcs)</FormLabel>
                                 <Input
                                     bg={'white'}
-                                    name="Difference(MT)"
+                                    name="Difference(Pcs)"
                                     type="number"
                                     value={(formData.stdProdPerHr - formData.actProdPerHr) ?? ''}
                                     disabled
                                 />
                             </FormControl>
                             <FormControl disabled>
-                                <FormLabel userSelect={'none'}>Difference(Pcs)</FormLabel>
+                                <FormLabel userSelect={'none'}>Difference(MT)</FormLabel>
                                 <Input
                                     bg={'white'}
-                                    name="Difference(Pcs)"
+                                    name="Difference(MT)"
                                     type="number"
                                     value={(formData.stdProdMTPerHr - formData.actProdMTPerHr) ?? ''}
                                     disabled

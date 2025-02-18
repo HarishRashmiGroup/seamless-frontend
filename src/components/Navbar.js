@@ -58,7 +58,7 @@ const Navbar = () => {
                 {/* Logo on the Left */}
                 <Flex display={{ base: "flex", md: "none" }}></Flex>
                 <Image
-                    src = "https://www.rashmiseamless.com/wp-content/uploads/2022/06/RASHMI-Group-white.png"
+                    src="https://www.rashmiseamless.com/wp-content/uploads/2022/06/RASHMI-Group-white.png"
                     // src='https://blackbucks-media.s3.ap-south-1.amazonaws.com/Rashmi%20group%20logo%20White%20Bar-1738846415526.png'
                     alt="Rashmi"
                     maxWidth="170px"
@@ -116,7 +116,7 @@ const Navbar = () => {
                                 leftIcon={<Icon as={ClipboardPlusIcon} w={5} h={5} />}
                                 colorScheme={location.pathname === '/hourly' ? "blue" : "gray"}
                                 variant="solid"
-                                onClick={() => navigate('/hourly')}
+                                onClick={() => { navigate('/hourly'); onClose(); }}
                             >
                                 Hourly Report
                             </Button>
@@ -124,7 +124,7 @@ const Navbar = () => {
                                 leftIcon={<Icon as={Clock} w={5} h={5} />}
                                 colorScheme={location.pathname === '/shift-report' ? "blue" : "gray"}
                                 variant="solid"
-                                onClick={() => navigate('/shift-report')}
+                                onClick={() => { navigate('/shift-report'); onClose(); }}
                             >
                                 Shift Report
                             </Button>
@@ -132,7 +132,7 @@ const Navbar = () => {
                                 leftIcon={<Icon as={LogOut} w={5} h={5} />}
                                 colorScheme="red"
                                 variant="solid"
-                                onClick={() => alert('Logout clicked!')}
+                                onClick={() => { localStorage.removeItem('token'); navigate('/login'); onClose(); }}
                             >
                                 Logout
                             </Button>
