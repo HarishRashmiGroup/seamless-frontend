@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const fetchUserData = async () => {
             const token = localStorage.getItem("token");
-            if (!token && location.pathname != "/login") {
+            if (!token && location && location.pathname != "/login") {
                 console.log(location)
                 navigate("/login");
                 return;
@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
                 if (error.response) {
                     if (error.response.status === 401) {
                         localStorage.removeItem("token");
-                        if (location.pathname != '/login')
+                        if (!location || location.pathname != '/login')
                             navigate("/login");
                     } else {
                         toast({
