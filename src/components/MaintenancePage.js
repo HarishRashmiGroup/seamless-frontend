@@ -20,6 +20,7 @@ import { useAuth } from "../providers/authProvider";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import FullScreenLoader from "./FullScreenLoader";
+import { keyframes } from "@emotion/react";
 
 export const MaintenancePage = () => {
     const user = useAuth();
@@ -33,13 +34,19 @@ export const MaintenancePage = () => {
     const [machineId, setMachineId] = useState(1);
     const [shiftStatus, setShiftStatus] = useState(new Map());
     const [token, setToken] = useState(localStorage.getItem('token'));
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isColorFetched, setIsColorFetched] = useState(false);
 
     const isMobile = useBreakpointValue({ base: true, md: false });
     const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
 
     const cardBg = useColorModeValue('white', 'gray.800');
     const borderColor = useColorModeValue('gray.200', 'gray.700');
+    const pulse = keyframes`
+                    0% { opacity: 1; }
+                    50% { opacity: 0.6; }
+                    100% { opacity: 1; }
+                    `;
 
     const changeDate = (days) => {
         const currentDate = date ? new Date(date) : new Date();
@@ -109,7 +116,7 @@ export const MaintenancePage = () => {
                 isClosable: true,
             });
         } finally {
-            setIsLoading(false);
+            // setIsLoading(false);
         }
     };
 
@@ -137,6 +144,7 @@ export const MaintenancePage = () => {
         const signal = controller.signal;
 
         try {
+            setIsColorFetched(false);
             const response = await axios.get(
                 `https://seamless-backend-nz7d.onrender.com/hourly/colors?machineId=${machineId}&date=${date}`,
                 {
@@ -171,6 +179,9 @@ export const MaintenancePage = () => {
                     isClosable: true,
                 });
             }
+        }
+        finally {
+            setIsColorFetched(true);
         }
     };
 
@@ -287,6 +298,7 @@ export const MaintenancePage = () => {
                                             py={2}
                                             whiteSpace="normal"
                                             onClick={() => handleClick(slot.id)}
+                                            animation={!isColorFetched ? `${pulse} 1.5s infinite ease-in-out` : "none"}
                                         >
                                             {slot.label}
                                         </Button>

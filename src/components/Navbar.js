@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ClipboardPlusIcon, Clock, LayoutDashboardIcon, LogOut, Menu, WrenchIcon, X } from 'lucide-react';
+import { ClipboardPlusIcon, Clock, LayoutDashboardIcon, LogIn, LogOut, Menu, WrenchIcon, X } from 'lucide-react';
 import {
     Box,
     Flex,
@@ -55,7 +55,6 @@ const Navbar = () => {
             alignItems={'center'}
         >
             <Flex alignItems="center" justifyContent="space-between" height="full">
-                {/* Logo on the Left */}
                 <Flex display={{ base: "flex", md: "none" }}></Flex>
                 <Image
                     src="https://www.rashmiseamless.com/wp-content/uploads/2022/06/RASHMI-Group-white.png"
@@ -69,13 +68,17 @@ const Navbar = () => {
                     draggable={false}
                 />
 
-                {/* Navigation Buttons */}
                 <Flex gap={4} display={{ base: "none", md: "flex" }}>
-                    <Button leftIcon={<Icon as={LayoutDashboardIcon} w={5} h={5} />} colorScheme={location.pathname === '/' ? "blue" : "gray"} variant="solid" onClick={() => navigate('/')}>Dashboard</Button>
-                    <Button leftIcon={<Icon as={WrenchIcon} w={5} h={5} />} colorScheme={location.pathname === '/maintenance' ? "blue" : "gray"} variant="solid" onClick={() => navigate('/maintenance')}>Maintenance</Button>
-                    <Button leftIcon={<Icon as={ClipboardPlusIcon} w={5} h={5} />} colorScheme={location.pathname === '/hourly' ? "blue" : "gray"} variant="solid" onClick={() => navigate('/hourly')}>Hourly Report</Button>
-                    <Button leftIcon={<Icon as={Clock} w={5} h={5} />} colorScheme={location.pathname === '/shift-report' ? "blue" : "gray"} variant="solid" onClick={() => navigate('/shift-report')}>Shift Report</Button>
-                    <Button leftIcon={<Icon as={LogOut} w={5} h={5} />} colorScheme="red" variant="solid" onClick={() => { localStorage.removeItem('token'); navigate('/login') }}>Logout</Button>
+                    <Button leftIcon={<Icon as={LayoutDashboardIcon} w={5} h={5} />} colorScheme={location.pathname === '/' ? "blue" : "gray"} variant="solid" onClick={() => { navigate('/') }}>Dashboard</Button>
+                    <Button leftIcon={<Icon as={WrenchIcon} w={5} h={5} />} colorScheme={location.pathname === '/maintenance' ? "blue" : "gray"} variant="solid" onClick={() => { navigate('/maintenance') }}>Maintenance</Button>
+                    <Button leftIcon={<Icon as={ClipboardPlusIcon} w={5} h={5} />} colorScheme={location.pathname === '/hourly' ? "blue" : "gray"} variant="solid" onClick={() => { navigate('/hourly') }}>Hourly Report</Button>
+                    <Button leftIcon={<Icon as={Clock} w={5} h={5} />} colorScheme={location.pathname === '/shift-report' ? "blue" : "gray"} variant="solid" onClick={() => { navigate('/shift-report') }}>Shift Report</Button>
+                    <Button leftIcon={<Icon as={LogOut} w={5} h={5} />} colorScheme={"red"} variant="solid"
+                        onClick={() => {
+                            localStorage.removeItem('token');
+                            navigate('/login');
+                            onClose();
+                        }}>{"Logout"}</Button>
                 </Flex>
                 <Icon
                     as={isOpen ? X : Menu}
@@ -88,7 +91,6 @@ const Navbar = () => {
                 />
             </Flex>
 
-            {/* Drawer for Mobile Menu */}
             <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
                 <DrawerOverlay />
                 <DrawerContent>
@@ -100,7 +102,7 @@ const Navbar = () => {
                                 leftIcon={<Icon as={LayoutDashboardIcon} w={5} h={5} />}
                                 colorScheme={location.pathname === '/' ? "blue" : "gray"}
                                 variant="solid"
-                                onClick={() => navigate('/')}
+                                onClick={() => { navigate('/'); onClose(); }}
                             >
                                 Dashboard
                             </Button>
@@ -108,7 +110,7 @@ const Navbar = () => {
                                 leftIcon={<Icon as={WrenchIcon} w={5} h={5} />}
                                 colorScheme={location.pathname === '/maintenance' ? "blue" : "gray"}
                                 variant="solid"
-                                onClick={() => navigate('/maintenance')}
+                                onClick={() => { navigate('/maintenance'); onClose(); }}
                             >
                                 Maintenance
                             </Button>
@@ -130,17 +132,21 @@ const Navbar = () => {
                             </Button>
                             <Button
                                 leftIcon={<Icon as={LogOut} w={5} h={5} />}
-                                colorScheme="red"
+                                colorScheme={"red"}
                                 variant="solid"
-                                onClick={() => { localStorage.removeItem('token'); navigate('/login'); onClose(); }}
+                                onClick={() => {
+                                    localStorage.removeItem('token');
+                                    navigate('/login');
+                                    onClose();
+                                }}
                             >
-                                Logout
+                                {"Logout"}
                             </Button>
                         </VStack>
                     </DrawerBody>
                 </DrawerContent>
-            </Drawer>
-        </Box>
+            </Drawer >
+        </Box >
     );
 };
 

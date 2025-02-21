@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import PasswordInput from "./PasswordInput";
 
 export default function LoginPage() {
     const toast = useToast();
@@ -126,7 +127,8 @@ export default function LoginPage() {
 
                         <Box>
                             <FormLabel userSelect={'none'}>Password</FormLabel>
-                            <Input
+                            <PasswordInput password={password} setPassword={setPassword} />
+                            {/* <Input
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
@@ -136,7 +138,7 @@ export default function LoginPage() {
                                 onCopy={(e) => e.preventDefault()}
                                 onCut={(e) => e.preventDefault()}
                                 onPaste={(e) => e.preventDefault()}
-                            />
+                            /> */}
                         </Box>
 
                         <Button

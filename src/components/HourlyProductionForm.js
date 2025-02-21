@@ -29,7 +29,7 @@ export const HourlyProductionForm = () => {
     const user = useAuth();
     const [input, setInput] = useState();
     const [searchParams, setSearchParams] = useSearchParams();
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);  
     const [isSaving, setIsSaving] = useState(false);
     const [initialValues] = useMemo(() => {
         const machineParam = searchParams.get('machine');
@@ -589,10 +589,10 @@ export const HourlyProductionForm = () => {
                         </Stack>
                         <Stack direction={{ base: "column", md: "row" }} spacing={4} mt={4}>
                             <FormControl disabled>
-                                <FormLabel userSelect={'none'}>Difference(Pcs)</FormLabel>
+                                <FormLabel userSelect={'none'}>Difference(nos)</FormLabel>
                                 <Input
                                     bg={'white'}
-                                    name="Difference(Pcs)"
+                                    name="Difference(nos)"
                                     type="number"
                                     value={(formData.stdProdPerHr - formData.actProdPerHr) ?? ''}
                                     disabled

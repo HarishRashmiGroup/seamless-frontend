@@ -1,7 +1,20 @@
+import { useState } from "react";
 import DataTable from "./DataTable";
-import Navbar from "./Navbar";
+import { RangeDatepicker } from "chakra-dayzed-datepicker";
+import { Box, Button } from "@chakra-ui/react";
+import { addDays, format } from "date-fns";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export const Dashboard = () => {
+
+const Dashboard = () => {
+    const [selectedDates, setSelectedDates] = useState([new Date(), new Date()]);
+    const handleStartDate = (diff) => {
+        setSelectedDates(([start, end]) => [addDays(start, diff), end]);
+    }
+
+    const handleEndDate = (diff) => {
+        setSelectedDates(([start, end]) => [start, addDays(end, diff)]);
+    }
     const tableData = [{
         machine: "HOT MILL-1",
         status:
@@ -564,8 +577,30 @@ export const Dashboard = () => {
 
     return (
         <>
-            <Navbar />
-            <DataTable data={tableData} />
+            <Box mt={2} gap={2} pb={3} borderBottom={'1px solid #e2e8f0'} justifyContent={["center", "space-around", "center", "right", "right"]} display={'flex'}>
+                <Button display={["none", "block", "block"]} onClick={() => handleStartDate(-1)}><ChevronLeft></ChevronLeft></Button>
+                <Button display={["none", "block", "block"]} disabled={selectedDates[0]?.getTime() === selectedDates[1]?.getTime()} onClick={() => handleStartDate(1)}><ChevronRight></ChevronRight></Button>
+                <RangeDatepicker
+                    selectedDates={selectedDates}
+                    onDateChange={setSelectedDates}
+                    configs={{
+                        dateFormat: "dd MMM yyyy",
+                    }}
+                    propsConfigs={{
+                        inputProps: {
+                            size: "sm",
+                            w: "210px",
+                            border: "1px solid",
+                            borderColor: "gray.300",
+                            _hover: { borderColor: "gray.400" },
+                            _focus: { borderColor: "blue.400", boxShadow: "0 0 0 1px blue.400" }
+                        }
+                    }}
+                />
+                <Button display={["none", "block", "block"]} disabled={selectedDates[0]?.getTime() === selectedDates[1]?.getTime()} onClick={() => handleEndDate(-1)}><ChevronLeft></ChevronLeft></Button>
+                <Button display={["none", "block", "block"]} onClick={() => handleEndDate(1)}><ChevronRight></ChevronRight></Button>
+            </Box >
+            <DataTable borderTop={'1px solid gray'} data={tableData} />
         </>
     );
 }

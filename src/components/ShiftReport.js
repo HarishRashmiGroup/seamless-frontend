@@ -31,6 +31,7 @@ import {
     Input,
     Image,
     Icon,
+    Tag,
 } from "@chakra-ui/react";
 import { ChevronLeftIcon, ChevronRightIcon, FilesIcon, } from "lucide-react";
 import FullScreenLoader from "./FullScreenLoader";
@@ -288,16 +289,22 @@ const ShiftReport = () => {
                     <Table size="md">
                         <Thead>
                             <Tr>
-                                <Th minW="150px">Interval</Th>
-                                <Th>Dia</Th>
-                                <Th minW="150px">OD <span fontSize={10}>x</span> WT x L</Th>
-                                <Th>Standard<br /> Prod/hr</Th>
-                                <Th>Actual<br /> Prod/hr</Th>
-                                <Th>Diff</Th>
-                                <Th>Running<br /> Mins</Th>
-                                <Th minW="200px">B.D Interval</Th>
-                                <Th>Duration</Th>
-                                <Th>Reason</Th>
+                                <Th p={2} minW="150px">Interval</Th>
+                                <Th p={2} w={'auto'}>
+                                    <HStack spacing={2}>
+                                        <Box minW={'50px'} justifyContent={'center'} display={'flex'} px={2} py={1} >Pcs</Box>
+                                        <Box minW={'50px'} justifyContent={'center'} display={'flex'} px={2} py={1} >OD</Box>
+                                        <Box minW={'50px'} justifyContent={'center'} display={'flex'} px={2} py={1}>L</Box>
+                                        <Box minW={'50px'} justifyContent={'center'} display={'flex'} px={2} py={1}>WT</Box>
+                                    </HStack>
+                                </Th>
+                                <Th p={2}>Standard<br /> Prod/hr</Th>
+                                <Th p={2}>Actual<br /> Prod/hr</Th>
+                                <Th p={2}>Diff</Th>
+                                <Th p={2}>Running<br /> Mins</Th>
+                                <Th minW="200px">B.D. Interval</Th>
+                                <Th p={2}>Duration</Th>
+                                <Th p={2}>Reason</Th>
                                 {/* <Th minW="350px">Permanent Solution</Th> */}
                             </Tr>
                         </Thead>
@@ -309,81 +316,83 @@ const ShiftReport = () => {
                                             <Tr key={`${index}-${bdIndex}`}>
                                                 {bdIndex === 0 && (
                                                     <>
-                                                        <Td rowSpan={item.breakdowns.length}>
+                                                        <Td p={2} rowSpan={item.breakdowns.length}>
                                                             {item.interval}
                                                         </Td>
-                                                        <Td rowSpan={item.breakdowns.length}>
+                                                        {/* <Td rowSpan={item.breakdowns.length}>
                                                             {item.diaDetails?.map((d, idx) => (
-                                                                <span key={idx}>
-                                                                    {d.diameter}
-                                                                    {idx !== item.diaDetails.length - 1 && <br />}
-                                                                </span>
+                                                                <Box key={idx} mb={1}>
+                                                                    <Tag minW={'50px'} justifyContent={'center'} size="sm" variant="outline" colorScheme="blue">{d.diameter}</Tag>
+                                                                </Box>
+                                                            ))}
+                                                        </Td> */}
+                                                        <Td p={2} rowSpan={item.breakdowns.length}>
+                                                            {item.diaDetails?.map((d, idx) => (
+                                                                <Box key={idx} display="flex" flexDirection="row" gap={2} mb={1}>
+                                                                    <Tag minW={'50px'} justifyContent={'center'} size="sm" variant="outline" colorScheme="blue">{d.od}</Tag>
+                                                                    <Tag minW={'50px'} justifyContent={'center'} size="sm" variant="outline" colorScheme="cyan">{d.diameter}</Tag>
+                                                                    <Tag minW={'50px'} justifyContent={'center'} size="sm" variant="outline" colorScheme="blue">{d.length}</Tag>
+                                                                    <Tag minW={'50px'} justifyContent={'center'} size="sm" variant="outline" colorScheme="cyan">{d.thickness}</Tag>
+                                                                </Box>
                                                             ))}
                                                         </Td>
-                                                        <Td rowSpan={item.breakdowns.length}>
-                                                            {item.diaDetails?.map((d, idx) => (
-                                                                <span key={idx}>
-                                                                    {d.od} * {d.thickness} * {d.length}
-                                                                    {idx !== item.diaDetails.length - 1 && <br />}
-                                                                </span>
-                                                            ))}
-                                                        </Td>
-                                                        <Td rowSpan={item.breakdowns.length}>{item.stdProdPerHr}</Td>
-                                                        <Td rowSpan={item.breakdowns.length}>{item.actProdPerHr}</Td>
-                                                        <Td rowSpan={item.breakdowns.length}>{item.difference}</Td>
-                                                        <Td rowSpan={item.breakdowns.length}>{item.runningMints}</Td>
+                                                        <Td p={2} rowSpan={item.breakdowns.length}>{item.stdProdPerHr}</Td>
+                                                        <Td p={2} rowSpan={item.breakdowns.length}>{item.actProdPerHr}</Td>
+                                                        <Td p={2} rowSpan={item.breakdowns.length}>{item.difference}</Td>
+                                                        <Td p={2} rowSpan={item.breakdowns.length}>{item.runningMints}</Td>
                                                     </>
                                                 )}
-                                                <Td>
+                                                <Td p={2}>
                                                     {`${formatTime(breakdown.startTime)} - ${formatTime(breakdown.endTime)}`}
                                                 </Td>
-                                                <Td>
+                                                <Td p={2}>
                                                     {breakdown.duration}
                                                 </Td>
-                                                <Td>
+                                                <Td p={2}>
                                                     <Button size="xs" m={0} p={1} onClick={() => { setModalData(breakdown); setIsOpen(true); }}><FilesIcon color="blue" /></Button>
                                                 </Td>
                                             </Tr>
                                         ))
                                     ) : (
                                         <Tr>
-                                            <Td>
+                                            <Td p={2}>
                                                 {item.interval}
                                             </Td>
-                                            <Td>
+                                            {/* <Td>
                                                 {item.diaDetails?.map((d, idx) => (
-                                                    <span key={idx}>
-                                                        {d.diameter}
-                                                        {idx !== item.diaDetails.length - 1 && <br />}
-                                                    </span>
+                                                    <Box key={idx} mb={2}>
+                                                        <Tag minW={'50px'} justifyContent={'center'} size="sm" variant="outline" colorScheme="blue">{d.diameter}</Tag>
+                                                    </Box>
+                                                ))}
+                                            </Td> */}
+                                            <Td p={2} rowSpan={item.breakdowns.length}>
+                                                {item.diaDetails?.map((d, idx) => (
+                                                    <Box key={idx} display="flex" flexDirection="row" gap={2} mb={1}>
+                                                        <Tag minW={'50px'} justifyContent={'center'} size="sm" variant="outline" colorScheme="blue">{d.od}</Tag>
+                                                        <Tag minW={'50px'} justifyContent={'center'} size="sm" variant="outline" colorScheme="cyan">{d.diameter}</Tag>
+                                                        <Tag minW={'50px'} justifyContent={'center'} size="sm" variant="outline" colorScheme="blue">{d.length}</Tag>
+                                                        <Tag minW={'50px'} justifyContent={'center'} size="sm" variant="outline" colorScheme="cyan">{d.thickness}</Tag>
+                                                    </Box>
                                                 ))}
                                             </Td>
-                                            <Td>
-                                                {item.diaDetails?.map((d, idx) => (
-                                                    <span key={idx}>
-                                                        {d.od} * {d.length} * {d.thickness}
-                                                        {idx !== item.diaDetails.length - 1 && <br />}
-                                                    </span>
-                                                ))}
-                                            </Td>
-                                            <Td>{item.stdProdPerHr}</Td>
-                                            <Td>{item.actProdPerHr}</Td>
-                                            <Td>{item.difference}</Td>
-                                            <Td>{item.runningMints}</Td>
-                                            <Td colSpan={4}>No breakdowns</Td>
+                                            <Td p={2}>{item.stdProdPerHr}</Td>
+                                            <Td p={2}>{item.actProdPerHr}</Td>
+                                            <Td p={2}>{item.difference}</Td>
+                                            <Td p={2}>{item.runningMints}</Td>
+                                            <Td p={2} colSpan={4}>No breakdowns</Td>
                                         </Tr>
                                     )}
                                 </React.Fragment>
                             ))}
                             <Tr fontWeight="bold" bg="gray.100">
-                                <Td colSpan={3}>Total</Td>
-                                <Td>{totalStdProd} pcs</Td>
-                                <Td>{totalActProd} pcs</Td>
-                                <Td>{totalDiff} pcs</Td>
-                                <Td>{totalRunningMins} Min</Td>
-                                <Td colSpan={1}></Td>
-                                <Td>{totalBreakdownDuration} Min</Td>
-                                <Td colSpan={2}></Td>
+                                <Td p={2} colSpan={2}>Total</Td>
+                                <Td p={2}>{totalStdProd} pcs</Td>
+                                <Td p={2}>{totalActProd} pcs</Td>
+                                <Td p={2}>{totalDiff} pcs</Td>
+                                <Td p={2}>{totalRunningMins} Min</Td>
+                                <Td p={2}></Td>
+                                <Td p={2}>{totalBreakdownDuration} Min</Td>
+                                <Td p={2} ></Td>
                             </Tr>
                         </Tbody>
                     </Table>
