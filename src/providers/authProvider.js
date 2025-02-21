@@ -16,7 +16,8 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const fetchUserData = async () => {
             const token = localStorage.getItem("token");
-            if (!token) {
+            if (!token && location.pathname != "/login") {
+                console.log(location)
                 navigate("/login");
                 return;
             }
@@ -35,7 +36,8 @@ export const AuthProvider = ({ children }) => {
                 if (error.response) {
                     if (error.response.status === 401) {
                         localStorage.removeItem("token");
-                        navigate("/login");
+                        if (location.pathname != '/login')
+                            navigate("/login");
                     } else {
                         toast({
                             title: "Error fetching user credentials.",

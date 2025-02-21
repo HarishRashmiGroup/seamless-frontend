@@ -127,7 +127,10 @@ export default function LoginPage() {
 
                         <Box>
                             <FormLabel userSelect={'none'}>Password</FormLabel>
-                            <PasswordInput password={password} setPassword={setPassword} />
+                            <PasswordInput
+                                password={password}
+                                setPassword={setPassword}
+                                onKeyDown={handleKeyDown} />
                             {/* <Input
                                 type="password"
                                 value={password}

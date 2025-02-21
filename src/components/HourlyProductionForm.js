@@ -487,7 +487,7 @@ export const HourlyProductionForm = () => {
                                 <Input
                                     bg={'white'}
                                     placeholder="No of Pcs"
-                                    value={detail.diameter ?? ''}
+                                    value={detail.nos ?? ''}
                                     onChange={(e) => handleDiaDetailsChange(index, 'nos', e.target.value)}
                                     type="number"
                                     onWheel={(e) => e.target.blur()}
