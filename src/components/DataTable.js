@@ -103,17 +103,15 @@ const DataTable = ({ data }) => {
     };
 
     const headers = [
-        "Machine", "Status", "Dia", "Hollow Size", "Avg Wt Per Pc",
+        "Machine", "Shift", "Avg Wt Per Pc",
         "Target Running Hr", "Actual Running Hr", "Standard Production",
         "Actual Production", "Loss MT", "Target Production Nos",
         "Actual Production Nos", "Target Pc Per Hr", "Actual Pc Per Hr",
-        "Efficiency Percentage", "Reason", "Solution", "Remarks"
+        "Efficiency Percentage", "Reason"
     ];
     const formula = {
         "Machine": "Machine",
-        "Status": "Shifts Running",
-        "Dia": "Running diameter",
-        "Hollow Size": "Hollow Size",
+        "Shift": "Shifts Running",
         "Avg Wt Per Pc": "Actual Production*1000 / Actual Production Nos",
         "Target Running Hr": "Target Running Hours",
         "Actual Running Hr": "Actual Running Hours",
@@ -126,8 +124,6 @@ const DataTable = ({ data }) => {
         "Actual Pc Per Hr": "Actual Production Nos / Actual Running Hr",
         "Los Pcs Per Hr": "Target Pcs Per Hr - Actual Pc Per Hr",
         "Reason": "Reason",
-        "Solution": "Solution",
-        "Remarks": "Remarks",
     };
 
     return (
@@ -180,36 +176,42 @@ const DataTable = ({ data }) => {
                         <Tbody>
                             {data.map((d, rowIndex) => (
                                 <Tr key={rowIndex}>
-                                    <Td
-                                        position={!isMobile ? "sticky" : "static"}
-                                        left={!isMobile ? 0 : "auto"}
-                                        bg="white"
-                                        zIndex={!isMobile ? 10 : 1}
-                                    >
-                                        {d.machine}
-                                    </Td>
+                                    {d.shift === 'A' && (
+                                        <Td
+                                            rowSpan={3}
+                                            position={!isMobile ? "sticky" : "static"}
+                                            left={!isMobile ? 0 : "auto"}
+                                            bg="white"
+                                            zIndex={!isMobile ? 10 : 1}
+                                        >
+                                            {d.machine}
+                                        </Td>
+                                    )}
+                                    {d.shift === 'subtotal' && (
+                                        <Td
+                                            position={!isMobile ? "sticky" : "static"}
+                                            left={!isMobile ? 0 : "auto"}
+                                            bg="white"
+                                            zIndex={!isMobile ? 10 : 1}
+                                        >
+                                            {d.machine}
+                                        </Td>
+                                    )}
                                     <Td>
-                                        <Text key={d.machine}>{d.status.join(', ')}</Text>
-                                        {/* {d.status.map((s) => (
-                                            <Text key={s.value}>{s.label}</Text>
-                                        ))} */}
+                                        <Text key={d.machine}>{d.shift}</Text>
                                     </Td>
-                                    <Td>{d.dia}</Td>
-                                    <Td>{d.hollowSize}</Td>
-                                    <Td>{d.avgWtPerPc}</Td>
-                                    <Td>{d.targetRunningHr}{d.targetRunningHr ? ' hrs' : '-'}</Td>
-                                    <Td>{d.actualRunningHr}{d.actualRunningHr ? ' hrs' : '-'}</Td>
-                                    <Td>{d.standardProduction}</Td>
-                                    <Td>{d.actualProduction}</Td>
-                                    <Td>{d.lossMT}</Td>
-                                    <Td>{d.targetProductionNos}</Td>
-                                    <Td>{d.actualProductionNos}</Td>
-                                    <Td>{d.targetPcsPerHr}</Td>
-                                    <Td>{d.actualPcsPerHr}</Td>
-                                    <Td>{d.efficiencyPercentage}{d.efficiencyPercentage ? ' %' : '-'}</Td>
+                                    <Td>{d.avgWtPerPc === "0" ? "" : d.avgWtPerPc}</Td>
+                                    <Td>{d.targetRunningHr || ''}{d.targetRunningHr ? ' hrs' : ''}</Td>
+                                    <Td>{d.actualRunningHr == "0.00" ? "" : d.actualRunningHr}{d.actualRunningHr != "0.00" ? ' hrs' : ''}</Td>
+                                    <Td>{d.standardProduction !== "0.00" ? d.standardProduction : ""}</Td>
+                                    <Td>{d.actualProduction === "0.00" ? "" : d.actualProduction}</Td>
+                                    <Td>{d.lossMT === "0.00" ? "" : d.lossMT}</Td>
+                                    <Td>{d.targetProductionNos === "0" ? "" : d.targetProductionNos}</Td>
+                                    <Td>{d.actualProductionNos === "0" ? "" : d.actualProductionNos}</Td>
+                                    <Td>{isNaN(d.targetPcsPerHr) ? "" : d.targetPcsPerHr}</Td>
+                                    <Td>{d.actualPcsPerHr === "0.00" ? "" : d.actualPcsPerHr}</Td>
+                                    <Td>{isNaN(d.efficiencyPercentage) ? "" : d.efficiencyPercentage}{!isNaN(d.efficiencyPercentage) ? ' %' : '-'}</Td>
                                     <Td>{renderExpandableText(d.reason, rowIndex, "reason")}</Td>
-                                    <Td>{renderExpandableText(d.solution, rowIndex, "solution")}</Td>
-                                    <Td>{renderExpandableText(d.remarks, rowIndex, "remarks")}</Td>
                                 </Tr>
                             ))}
                         </Tbody>

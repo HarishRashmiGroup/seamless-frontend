@@ -29,7 +29,7 @@ export const HourlyProductionForm = () => {
     const user = useAuth();
     const [input, setInput] = useState();
     const [searchParams, setSearchParams] = useSearchParams();
-    const [isLoading, setIsLoading] = useState(false);  
+    const [isLoading, setIsLoading] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [initialValues] = useMemo(() => {
         const machineParam = searchParams.get('machine');
@@ -68,7 +68,7 @@ export const HourlyProductionForm = () => {
         shiftLetter: initialValues.shiftLetter,
         date: '',
         status: true,
-        diaDetails: [{ diameter: '', pcs: '', thickness: '', length: '' }],
+        diaDetails: [{ diameter: '', nos: '', thickness: '', length: '' }],
         breakdownDetails: [],
         stdProdPerHr: '',
         actProdPerHr: '',
@@ -82,22 +82,47 @@ export const HourlyProductionForm = () => {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
+    const calculateWeight = (nos, diameter, length, thickness) => {
+        return ((diameter - thickness) * 0.02467 * length * nos) / 1000;
+    };
+
     const handleDiaDetailsChange = (index, field, value) => {
         const newDiaDetails = [...formData.diaDetails];
         newDiaDetails[index][field] = value;
-        setFormData((prev) => ({ ...prev, diaDetails: newDiaDetails }));
+
+        const totalPcs = newDiaDetails.reduce((sum, d) => sum + (isNaN(Number(d.nos)) ? 0 : Number(d.nos)), 0);
+
+        const totalWeight = newDiaDetails.reduce((sum, d) => {
+            if (!isNaN(Number(d.nos)) && !isNaN(Number(d.diameter)) && !isNaN(Number(d.length)) && !isNaN(Number(d.thickness))) {
+                return sum + calculateWeight(Number(d.nos), Number(d.diameter), Number(d.length), Number(d.thickness));
+            }
+            return sum;
+        }, 0);
+
+        setFormData((prev) => ({
+            ...prev,
+            diaDetails: newDiaDetails,
+            actProdPerHr: totalPcs, 
+            actProdMTPerHr: totalWeight.toFixed(2), 
+        }));
     };
 
     const addDiaDetailsLine = () => {
         setFormData((prev) => ({
             ...prev,
-            diaDetails: [...prev.diaDetails, { diameter: '', pcs: '', thickness: '', length: '' }],
+            diaDetails: [...prev.diaDetails, { diameter: '', nos: '', thickness: '', length: '' }],
         }));
     };
 
     const removeDiaDetailsLine = (index) => {
         const newDiaDetails = formData.diaDetails.filter((_, i) => i !== index);
-        setFormData((prev) => ({ ...prev, diaDetails: newDiaDetails }));
+        const totalPcs = newDiaDetails.reduce((sum, d) => sum + (Number(d.nos) || 0), 0);
+
+        setFormData((prev) => ({
+            ...prev,
+            diaDetails: newDiaDetails,
+            actProdPerHr: totalPcs,
+        }));
     };
 
     const calculateDuration = (startTime, endTime) => {
@@ -551,7 +576,7 @@ export const HourlyProductionForm = () => {
                                     onChange={handleChange}
                                 />
                             </FormControl>
-                            <FormControl isRequired>
+                            <FormControl isRequired isReadOnly>
                                 <FormLabel userSelect={'none'}>Actual Production/HR(nos)</FormLabel>
                                 <Input
                                     bg={'white'}
@@ -588,34 +613,34 @@ export const HourlyProductionForm = () => {
                             </FormControl>
                         </Stack>
                         <Stack direction={{ base: "column", md: "row" }} spacing={4} mt={4}>
-                            <FormControl disabled>
+                            <FormControl isReadOnly>
                                 <FormLabel userSelect={'none'}>Difference(nos)</FormLabel>
                                 <Input
                                     bg={'white'}
                                     name="Difference(nos)"
                                     type="number"
                                     value={(formData.stdProdPerHr - formData.actProdPerHr) ?? ''}
-                                    disabled
+
                                 />
                             </FormControl>
-                            <FormControl disabled>
+                            <FormControl isReadOnly>
                                 <FormLabel userSelect={'none'}>Difference(MT)</FormLabel>
                                 <Input
                                     bg={'white'}
                                     name="Difference(MT)"
                                     type="number"
                                     value={(formData.stdProdMTPerHr - formData.actProdMTPerHr) ?? ''}
-                                    disabled
+
                                 />
                             </FormControl>
-                            <FormControl disabled>
+                            <FormControl isReadOnly>
                                 <FormLabel userSelect={'none'}>Running Mins</FormLabel>
                                 <Input
                                     bg={'white'}
                                     name="runningMints"
                                     type="number"
                                     value={formData.runningMints ?? ''}
-                                    disabled
+
                                 />
                             </FormControl>
                         </Stack>

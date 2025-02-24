@@ -321,7 +321,7 @@ const ShiftReport = () => {
                                                         <Td p={2} rowSpan={item.breakdowns.length}>
                                                             {item.diaDetails?.map((d, idx) => (
                                                                 <Box key={idx} display="flex" flexDirection="row" gap={2} mb={1}>
-                                                                    <Tag minW={'50px'} justifyContent={'center'} size="sm" variant="outline" colorScheme="blue">{d.od}</Tag>
+                                                                    <Tag minW={'50px'} justifyContent={'center'} size="sm" variant="outline" colorScheme="blue">{d.nos}</Tag>
                                                                     <Tag minW={'50px'} justifyContent={'center'} size="sm" variant="outline" colorScheme="cyan">{d.diameter}</Tag>
                                                                     <Tag minW={'50px'} justifyContent={'center'} size="sm" variant="outline" colorScheme="blue">{d.length}</Tag>
                                                                     <Tag minW={'50px'} justifyContent={'center'} size="sm" variant="outline" colorScheme="cyan">{d.thickness}</Tag>
@@ -364,7 +364,7 @@ const ShiftReport = () => {
                                             <Td p={2}>{item.actProdPerHr}</Td>
                                             <Td p={2}>{item.difference}</Td>
                                             <Td p={2}>{item.runningMints}</Td>
-                                            <Td p={2} colSpan={3}>No breakdowns</Td>
+                                            <Td p={2} colSpan={3}>-</Td>
                                         </Tr>
                                     )}
                                 </React.Fragment>
