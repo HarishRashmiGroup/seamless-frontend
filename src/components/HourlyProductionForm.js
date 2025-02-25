@@ -31,6 +31,7 @@ export const HourlyProductionForm = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [isLoading, setIsLoading] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [shiftLoading, setShiftLoading] = useState(false);
     const [initialValues] = useMemo(() => {
         const machineParam = searchParams.get('machine');
         const dateParam = searchParams.get('date');
@@ -244,6 +245,8 @@ export const HourlyProductionForm = () => {
 
     const fetchShifts = async (shiftLetter) => {
         try {
+            setShifts([]);
+            setShiftLoading(true);
             const response = await axios.post('https://seamless-backend-nz7d.onrender.com/basic/shifts', {
                 shift: formData.shiftLetter,
                 shiftId: isNaN(Number(initialValues.shiftId)) ? undefined : Number(initialValues.shiftId) || undefined
@@ -269,6 +272,8 @@ export const HourlyProductionForm = () => {
                 duration: 1000,
                 isClosable: true,
             });
+        } finally {
+            setShiftLoading(false);
         }
     };
 
@@ -330,11 +335,8 @@ export const HourlyProductionForm = () => {
             date: initialValues.date,
             shiftId: initialValues.shiftId,
         }));
-        const controller = new AbortController();
+        console.log('called');
         fetchShifts();
-        return () => {
-            controller.abort();
-        };
     }, [initialValues]);
 
     useEffect(() => {
@@ -385,6 +387,7 @@ export const HourlyProductionForm = () => {
                                         placeholder="Select Shift"
                                         value={selectedShift}
                                         onChange={handleShiftChange}
+                                        disabled={shiftLoading}
                                     >
                                         <option value="A">Shift A</option>
                                         <option value="B">Shift B</option>
@@ -399,6 +402,7 @@ export const HourlyProductionForm = () => {
                                         value={formData.shiftId}
                                         onChange={(e) => handleChange(e)}
                                         name="shiftId"
+                                        disabled={shiftLoading}
                                     >
                                         {shifts.map((shift) => (
                                             <option key={shift.id} value={shift.id}>

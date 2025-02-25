@@ -33,7 +33,7 @@ function App() {
             <Box pt="80px">
               <Routes>
                 <Route path="/" element={
-                  <ProtectedRoute><Dashboard /></ProtectedRoute>
+                  <ProtectedRoute allowedRoles={['admin', 'head']}><Dashboard /></ProtectedRoute>
                 } />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/hourly" element={<HourlyProductionForm />} />
