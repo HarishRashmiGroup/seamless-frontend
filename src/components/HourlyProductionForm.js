@@ -247,9 +247,11 @@ export const HourlyProductionForm = () => {
         try {
             setShifts([]);
             setShiftLoading(true);
+            const shift = shiftLetter || formData.shiftLetter;
+            const shiftId = shift ? undefined : Number(formData.shiftId)
             const response = await axios.post('https://seamless-backend-nz7d.onrender.com/basic/shifts', {
-                shift: formData.shiftLetter,
-                shiftId: isNaN(Number(initialValues.shiftId)) ? undefined : Number(initialValues.shiftId) || undefined
+                shift,
+                shiftId,
             }, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -335,8 +337,8 @@ export const HourlyProductionForm = () => {
             date: initialValues.date,
             shiftId: initialValues.shiftId,
         }));
-        console.log('called');
-        fetchShifts();
+        if (shifts.length === 0)
+            fetchShifts();
     }, [initialValues]);
 
     useEffect(() => {
