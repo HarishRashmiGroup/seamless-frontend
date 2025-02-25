@@ -17,6 +17,7 @@ import {
     Image
 } from '@chakra-ui/react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../providers/authProvider';
 
 const Navbar = () => {
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -24,6 +25,7 @@ const Navbar = () => {
     const [lastScrollY, setLastScrollY] = useState(0);
     const navigate = useNavigate();
     const location = useLocation();
+    const { user, setUser } = useAuth();
 
     const handleScroll = () => {
         const currentScrollY = window.scrollY;
@@ -69,16 +71,17 @@ const Navbar = () => {
                 />
 
                 <Flex gap={4} display={{ base: "none", md: "flex" }}>
-                    <Button leftIcon={<Icon as={LayoutDashboardIcon} w={5} h={5} />} colorScheme={location.pathname === '/' ? "blue" : "gray"} variant="solid" onClick={() => { navigate('/') }}>Dashboard</Button>
-                    <Button leftIcon={<Icon as={WrenchIcon} w={5} h={5} />} colorScheme={location.pathname === '/maintenance' ? "blue" : "gray"} variant="solid" onClick={() => { navigate('/maintenance') }}>Maintenance</Button>
-                    <Button leftIcon={<Icon as={ClipboardPlusIcon} w={5} h={5} />} colorScheme={location.pathname === '/hourly' ? "blue" : "gray"} variant="solid" onClick={() => { navigate('/hourly') }}>Hourly Report</Button>
-                    <Button leftIcon={<Icon as={Clock} w={5} h={5} />} colorScheme={location.pathname === '/shift-report' ? "blue" : "gray"} variant="solid" onClick={() => { navigate('/shift-report') }}>Shift Report</Button>
-                    <Button leftIcon={<Icon as={LogOut} w={5} h={5} />} colorScheme={"red"} variant="solid"
+                    {user && user.role != 'operator' && user.role != 'maintenance' && <Button leftIcon={<Icon as={LayoutDashboardIcon} w={5} h={5} />} colorScheme={location.pathname === '/' ? "blue" : "gray"} variant="solid" onClick={() => { navigate('/') }}>Dashboard</Button>}
+                    {user && user.role != 'operator' && <Button leftIcon={<Icon as={WrenchIcon} w={5} h={5} />} colorScheme={location.pathname === '/maintenance' ? "blue" : "gray"} variant="solid" onClick={() => { navigate('/maintenance') }}>Maintenance</Button>}
+                    {user && <Button leftIcon={<Icon as={ClipboardPlusIcon} w={5} h={5} />} colorScheme={location.pathname === '/hourly' ? "blue" : "gray"} variant="solid" onClick={() => { navigate('/hourly') }}>Hourly Report</Button>}
+                    {user && user.role != 'operator' && <Button leftIcon={<Icon as={Clock} w={5} h={5} />} colorScheme={location.pathname === '/shift-report' ? "blue" : "gray"} variant="solid" onClick={() => { navigate('/shift-report') }}>Shift Report</Button>}
+                    {location.pathname != '/login' && <Button leftIcon={<Icon as={LogOut} w={5} h={5} />} colorScheme={"red"} variant="solid"
                         onClick={() => {
                             localStorage.removeItem('token');
                             navigate('/login');
+                            setUser(null);
                             onClose();
-                        }}>{"Logout"}</Button>
+                        }}>{"Logout"}</Button>}
                 </Flex>
                 <Icon
                     as={isOpen ? X : Menu}
@@ -98,22 +101,22 @@ const Navbar = () => {
                     <DrawerHeader>Rashmi Seamless</DrawerHeader>
                     <DrawerBody>
                         <VStack spacing={4} align="stretch">
-                            <Button
+                            {user && user.role != 'operator' && user.role != 'maintenance' && <Button
                                 leftIcon={<Icon as={LayoutDashboardIcon} w={5} h={5} />}
                                 colorScheme={location.pathname === '/' ? "blue" : "gray"}
                                 variant="solid"
                                 onClick={() => { navigate('/'); onClose(); }}
                             >
                                 Dashboard
-                            </Button>
-                            <Button
+                            </Button>}
+                            {user && user.role != 'operator' && <Button
                                 leftIcon={<Icon as={WrenchIcon} w={5} h={5} />}
                                 colorScheme={location.pathname === '/maintenance' ? "blue" : "gray"}
                                 variant="solid"
                                 onClick={() => { navigate('/maintenance'); onClose(); }}
                             >
                                 Maintenance
-                            </Button>
+                            </Button>}
                             <Button
                                 leftIcon={<Icon as={ClipboardPlusIcon} w={5} h={5} />}
                                 colorScheme={location.pathname === '/hourly' ? "blue" : "gray"}
@@ -122,14 +125,14 @@ const Navbar = () => {
                             >
                                 Hourly Report
                             </Button>
-                            <Button
+                            {user && user.role != 'operator' && <Button
                                 leftIcon={<Icon as={Clock} w={5} h={5} />}
                                 colorScheme={location.pathname === '/shift-report' ? "blue" : "gray"}
                                 variant="solid"
                                 onClick={() => { navigate('/shift-report'); onClose(); }}
                             >
                                 Shift Report
-                            </Button>
+                            </Button>}
                             <Button
                                 leftIcon={<Icon as={LogOut} w={5} h={5} />}
                                 colorScheme={"red"}
@@ -137,6 +140,7 @@ const Navbar = () => {
                                 onClick={() => {
                                     localStorage.removeItem('token');
                                     navigate('/login');
+                                    setUser(null);
                                     onClose();
                                 }}
                             >

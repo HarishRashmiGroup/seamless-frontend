@@ -58,7 +58,7 @@ export default function LoginPage() {
             });
             if (response.status === 201) {
                 localStorage.setItem("token", response.data.token);
-                navigate('/');
+                navigate(response.data.path || '/hourly');
             }
         } catch (error) {
             toast({

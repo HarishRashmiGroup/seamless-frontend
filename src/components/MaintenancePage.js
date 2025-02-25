@@ -23,7 +23,7 @@ import FullScreenLoader from "./FullScreenLoader";
 import { keyframes } from "@emotion/react";
 
 export const MaintenancePage = () => {
-    const user = useAuth();
+    const { user, setUser } = useAuth();
     const toast = useToast();
     const navigate = useNavigate();
     const shifts = ['A', 'B', 'C'];
@@ -122,7 +122,12 @@ export const MaintenancePage = () => {
 
     const fetchMachines = async () => {
         try {
-            const response = await axios.get('https://seamless-backend-nz7d.onrender.com/basic/machines');
+            const response = await axios.get('https://seamless-backend-nz7d.onrender.com/basic/machines',
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
 
             if (response.status === 200) {
                 setMachines(response.data);

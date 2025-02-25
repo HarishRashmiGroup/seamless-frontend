@@ -13,7 +13,7 @@ const HourlyProductionForm = lazy(() => import('./components/HourlyProductionFor
 const MaintenancePage = lazy(() => import('./components/MaintenancePage.js'));
 
 const ProtectedRoute = ({ allowedRoles, children }) => {
-  const user = useAuth();
+  const { user, setUser } = useAuth();
   if (!user) return;
   if (!allowedRoles.includes(user.role)) {
     return <Box width={'full'} mt={100} display={'flex'} justifyContent={'center'}><Text color={'red'}>Access Denied</Text></Box>;
@@ -32,13 +32,15 @@ function App() {
             <Navbar />
             <Box pt="80px">
               <Routes>
-                <Route path="/" element={<Dashboard />} />
+                <Route path="/" element={
+                  <ProtectedRoute><Dashboard /></ProtectedRoute>
+                } />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/hourly" element={<HourlyProductionForm />} />
                 <Route
                   path="/production"
                   element={
-                    <ProtectedRoute allowedRoles={['admin', 'manager']}>
+                    <ProtectedRoute allowedRoles={['admin', 'head']}>
                       <ProductionForm />
                     </ProtectedRoute>
                   }

@@ -90,7 +90,13 @@ const ShiftReport = () => {
     const fetchMachines = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get('https://seamless-backend-nz7d.onrender.com/basic/machines');
+            const token = localStorage.getItem('token');
+            const response = await axios.get('https://seamless-backend-nz7d.onrender.com/basic/machines',
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
 
             if (response.status === 200) {
                 setMachines(response.data);

@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }) => {
 
         fetchUserData();
     }, [navigate, location]);
-    return <AuthContext.Provider value={user}>{children}</AuthContext.Provider>;
+    return <AuthContext.Provider value={{ user, setUser }}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => useContext(AuthContext);

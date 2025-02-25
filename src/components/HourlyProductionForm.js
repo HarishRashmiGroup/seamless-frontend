@@ -26,7 +26,7 @@ import FullScreenLoader from "./FullScreenLoader";
 
 export const HourlyProductionForm = () => {
     const toast = useToast();
-    const user = useAuth();
+    const { user, setUser } = useAuth();
     const [input, setInput] = useState();
     const [searchParams, setSearchParams] = useSearchParams();
     const [isLoading, setIsLoading] = useState(false);
@@ -102,8 +102,8 @@ export const HourlyProductionForm = () => {
         setFormData((prev) => ({
             ...prev,
             diaDetails: newDiaDetails,
-            actProdPerHr: totalPcs, 
-            actProdMTPerHr: totalWeight.toFixed(2), 
+            actProdPerHr: totalPcs,
+            actProdMTPerHr: totalWeight.toFixed(2),
         }));
     };
 
@@ -173,7 +173,7 @@ export const HourlyProductionForm = () => {
                     ...response.data.formData
                 }));
                 toast({
-                    title: "Form Submitted",
+                    title: "Hourly Report Submitted",
                     description: response.data.message,
                     status: "success",
                     duration: 5000,
@@ -196,7 +196,13 @@ export const HourlyProductionForm = () => {
 
     const fetchMachines = async () => {
         try {
-            const response = await axios.get('https://seamless-backend-nz7d.onrender.com/basic/machines');
+            const response = await axios.get('https://seamless-backend-nz7d.onrender.com/basic/machines',
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
 
             if (response.status === 200) {
                 setMachines(response.data);
@@ -208,7 +214,7 @@ export const HourlyProductionForm = () => {
                 title: "Error",
                 description: error?.response?.data?.message || "Something is not good.",
                 status: "error",
-                duration: 5000,
+                duration: 1000,
                 isClosable: true,
             });
         }
@@ -260,7 +266,7 @@ export const HourlyProductionForm = () => {
                 title: "Error",
                 description: error?.response?.data?.message || "Failed to fetch shifts",
                 status: "error",
-                duration: 3000,
+                duration: 1000,
                 isClosable: true,
             });
         }
