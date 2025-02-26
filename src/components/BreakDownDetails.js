@@ -19,7 +19,7 @@ import axios from "axios";
 const BreakdownDetails = ({ breakdownDetails, rootCauses, departments, breakdownTypes, onChange, onAdd, onRemove, needRefresh }) => {
     const user = useAuth();
     const toast = useToast();
-    const token = useState(localStorage.getItem('token'));
+    const token = localStorage.getItem('token');
 
     const calculateDuration = (startTime, endTime) => {
         if (!startTime || !endTime) return '';
