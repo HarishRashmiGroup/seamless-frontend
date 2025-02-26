@@ -84,18 +84,27 @@ export const HourlyProductionForm = () => {
     };
 
     const calculateWeight = (nos, diameter, length, thickness) => {
-        return ((diameter - thickness) * 0.02467 * length * nos) / 1000;
+        return ((diameter - thickness) * thickness * 0.02467 * length * nos) / 1000;
     };
 
     const handleDiaDetailsChange = (index, field, value) => {
         const newDiaDetails = [...formData.diaDetails];
         newDiaDetails[index][field] = value;
 
-        const totalPcs = newDiaDetails.reduce((sum, d) => sum + (isNaN(Number(d.nos)) ? 0 : Number(d.nos)), 0);
+        const totalPcs = newDiaDetails.reduce((sum, d) => {
+            const nos = Number(d.nos);
+            return sum + (isNaN(nos) ? 0 : nos);
+        }, 0);
 
         const totalWeight = newDiaDetails.reduce((sum, d) => {
-            if (!isNaN(Number(d.nos)) && !isNaN(Number(d.diameter)) && !isNaN(Number(d.length)) && !isNaN(Number(d.thickness))) {
-                return sum + calculateWeight(Number(d.nos), Number(d.diameter), Number(d.length), Number(d.thickness));
+            const nos = Number(d.nos);
+            const diameter = Number(d.diameter);
+            const thickness = Number(d.thickness);
+            const length = Number(d.length);
+
+            if (!isNaN(nos) && !isNaN(diameter) && !isNaN(thickness) && !isNaN(length) &&
+                nos > 0 && diameter > 0 && thickness > 0 && length > 0) {
+                return sum + calculateWeight(nos, diameter, length, thickness);
             }
             return sum;
         }, 0);
@@ -117,12 +126,29 @@ export const HourlyProductionForm = () => {
 
     const removeDiaDetailsLine = (index) => {
         const newDiaDetails = formData.diaDetails.filter((_, i) => i !== index);
-        const totalPcs = newDiaDetails.reduce((sum, d) => sum + (Number(d.nos) || 0), 0);
+        const totalPcs = newDiaDetails.reduce((sum, d) => {
+            const nos = Number(d.nos);
+            return sum + (isNaN(nos) ? 0 : nos);
+        }, 0);
+
+        const totalWeight = newDiaDetails.reduce((sum, d) => {
+            const nos = Number(d.nos);
+            const diameter = Number(d.diameter);
+            const thickness = Number(d.thickness);
+            const length = Number(d.length);
+
+            if (!isNaN(nos) && !isNaN(diameter) && !isNaN(thickness) && !isNaN(length) &&
+                nos > 0 && diameter > 0 && thickness > 0 && length > 0) {
+                return sum + calculateWeight(nos, diameter, length, thickness);
+            }
+            return sum;
+        }, 0);
 
         setFormData((prev) => ({
             ...prev,
             diaDetails: newDiaDetails,
             actProdPerHr: totalPcs,
+            actProdMTPerHr: totalWeight.toFixed(2),
         }));
     };
 
