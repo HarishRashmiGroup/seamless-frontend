@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import DataTable from "./DataTable";
 import { RangeDatepicker } from "chakra-dayzed-datepicker";
 import { Box, Button } from "@chakra-ui/react";
-import { addDays, addSeconds } from "date-fns";
+import { addDays } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import axios from "axios";
 
@@ -22,8 +22,8 @@ const Dashboard = () => {
     useEffect(() => {
         const fetchDashboard = async () => {
             try {
-                setIsLoading(true);//https://seamless-backend-nz7d.onrender.com
-                const response = await axios.get(`http://localhost:3001/hourly/dashboard?startDate=${selectedDates[0].toLocaleDateString("en-CA")}&endDate=${selectedDates[1].toLocaleDateString("en-CA")}`,
+                setIsLoading(true);
+                const response = await axios.get(`https://seamless-backend-nz7d.onrender.com/hourly/dashboard?startDate=${selectedDates[0].toLocaleDateString("en-CA")}&endDate=${selectedDates[1].toLocaleDateString("en-CA")}`,
                     {
                         headers: {
                             Authorization: `Bearer ${token} `
