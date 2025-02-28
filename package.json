@@ -22,6 +22,7 @@
     "react-hot-toast": "^2.5.1",
     "react-router-dom": "^7.1.4",
     "react-scripts": "5.0.1",
+    "react-select": "^5.10.0",
     "slate": "^0.112.0",
     "slate-dom": "^0.111.0",
     "slate-react": "^0.112.1",

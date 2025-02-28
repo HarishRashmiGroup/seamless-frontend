@@ -201,7 +201,7 @@ const DataTable = ({ data }) => {
                                         <Text key={d.machine}>{d.shift}</Text>
                                     </Td>
                                     <Td>{d.avgWtPerPc === "0" ? "" : d.avgWtPerPc}</Td>
-                                    <Td>{d.targetRunningHr || ''}{d.targetRunningHr ? ' hrs' : ''}</Td>
+                                    <Td>{d.targetRunningHr === "0.00" ? '': d.targetRunningHr}{d.targetRunningHr !== "0.00" ? ' hrs' : ''}</Td>
                                     <Td>{d.actualRunningHr == "0.00" ? "" : d.actualRunningHr}{d.actualRunningHr != "0.00" ? ' hrs' : ''}</Td>
                                     <Td>{d.standardProduction !== "0.00" ? d.standardProduction : ""}</Td>
                                     <Td>{d.actualProduction === "0.00" ? "" : d.actualProduction}</Td>

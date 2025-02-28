@@ -693,6 +693,7 @@ export const HourlyProductionForm = () => {
                             onRemove={removeBreakdownDetailsLine}
                             departments={departments}
                             rootCauses={rootCauses}
+                            setRootCauses={setRootCauses}
                             breakdownTypes={types}
                             needRefresh={needRefresh}
                         />

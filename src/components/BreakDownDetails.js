@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
     Box,
     Text,
@@ -14,9 +14,10 @@ import {
 } from '@chakra-ui/react';
 import { Trash2Icon, CirclePlusIcon } from "lucide-react";
 import { useAuth } from "../providers/authProvider";
+import CreatableSelect from "react-select/creatable";
 import axios from "axios";
 
-const BreakdownDetails = ({ breakdownDetails, rootCauses, departments, breakdownTypes, onChange, onAdd, onRemove, needRefresh }) => {
+const BreakdownDetails = ({ breakdownDetails, rootCauses, setRootCauses, departments, breakdownTypes, onChange, onAdd, onRemove, needRefresh }) => {
     const user = useAuth();
     const toast = useToast();
     const token = localStorage.getItem('token');
@@ -84,6 +85,19 @@ const BreakdownDetails = ({ breakdownDetails, rootCauses, departments, breakdown
                 isClosable: true,
             });
         }
+    };
+
+    //root cause create
+    const handleCreate = (inputValue, index) => {
+        axios.post("https://seamless-backend-nz7d.onrender.com/basic/create-root-cause", { label: inputValue }, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }).then((response) => {
+            const newRootCause = { id: response.data.id, label: response.data.label };
+            setRootCauses([...rootCauses, newRootCause]);
+            handleBreakdownChange(index, "rootCauseId", newRootCause.id);
+        });
     };
 
     return (
@@ -181,18 +195,14 @@ const BreakdownDetails = ({ breakdownDetails, rootCauses, departments, breakdown
                                     </FormControl>
                                     <FormControl>
                                         <FormLabel>Root Cause</FormLabel>
-                                        <Select
+                                        <CreatableSelect
+                                            isDisabled={breakdown.id == null}
                                             placeholder="Root Cause"
-                                            value={breakdown.rootCauseId ?? ''}
-                                            onChange={(e) => handleBreakdownChange(index, 'rootCauseId', Number(e.target.value))}
-                                            disabled={breakdown.id == null}
-                                        >
-                                            {rootCauses.map((rc) => (
-                                                <option key={rc.id} value={rc.id}>
-                                                    {rc.label}
-                                                </option>
-                                            ))}
-                                        </Select>
+                                            value={rootCauses.find((rc) => rc.id == Number(breakdown.rootCauseId)) || null}
+                                            onChange={(selected) => { handleBreakdownChange(index, "rootCauseId", Number(selected.value)); console.log(selected) }}
+                                            onCreateOption={(inputValue) => handleCreate(inputValue, index)}
+                                            options={rootCauses.map((rc) => ({ value: rc.id, label: rc.label }))}
+                                        />
                                     </FormControl>
                                 </Stack>
                                 <Stack direction={{ base: "column", md: "row" }} mt={2} spacing={4}>
