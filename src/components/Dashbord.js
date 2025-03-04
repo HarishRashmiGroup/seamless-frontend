@@ -91,7 +91,7 @@ const Dashboard = () => {
                     {!isDownloading && <CloudDownloadIcon></CloudDownloadIcon>}
                     {isDownloading && <Spinner size="sm" />}
                 </Button> */}
-                <Button display={["none", "block", "block"]} onClick={() => handleStartDate(-1)}><ChevronLeft></ChevronLeft></Button>
+                <Button onClick={() => handleStartDate(-1)}><ChevronLeft></ChevronLeft></Button>
                 {/* <Button display={["none", "block", "block"]} disabled={selectedDates[0]?.getTime() === selectedDates[1]?.getTime()} onClick={() => handleStartDate(1)}><ChevronRight></ChevronRight></Button> */}
                 <RangeDatepicker
                     selectedDates={selectedDates}
@@ -111,7 +111,7 @@ const Dashboard = () => {
                     }}
                 />
                 {/* <Button display={["none", "block", "block"]} disabled={selectedDates[0]?.getTime() === selectedDates[1]?.getTime()} onClick={() => handleEndDate(-1)}><ChevronLeft></ChevronLeft></Button> */}
-                <Button display={["none", "block", "block"]} onClick={() => handleEndDate(1)}><ChevronRight></ChevronRight></Button>
+                <Button onClick={() => handleEndDate(1)}><ChevronRight></ChevronRight></Button>
             </Box >
             {
                 isLoading && <FullScreenLoader isLoading={isLoading}/>

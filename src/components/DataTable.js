@@ -188,20 +188,20 @@ const DataTable = ({ data }) => {
                                         </Td>
                                     )}
                                     {d.shift === 'subtotal' && (
-                                        <Td
-                                            position={!isMobile ? "sticky" : "static"}
-                                            left={!isMobile ? 0 : "auto"}
-                                            bg="white"
-                                            zIndex={!isMobile ? 10 : 1}
-                                        >
-                                            {d.machine}
+                                        // <Td
+                                        //     position={!isMobile ? "sticky" : "static"}
+                                        //     left={!isMobile ? 0 : "auto"}
+                                        //     bg="white"
+                                        //     zIndex={!isMobile ? 10 : 1}
+                                        // >
+                                        //     {d.machine}
+                                        // </Td>
+                                        <Td colSpan={2}>
+                                            <Text key={d.machine}>{d.shift}</Text>
                                         </Td>
                                     )}
-                                    <Td>
-                                        <Text key={d.machine}>{d.shift}</Text>
-                                    </Td>
                                     <Td>{d.avgWtPerPc === "0" ? "" : d.avgWtPerPc}</Td>
-                                    <Td>{d.targetRunningHr === "0.00" ? '': d.targetRunningHr}{d.targetRunningHr !== "0.00" ? ' hrs' : ''}</Td>
+                                    <Td>{d.targetRunningHr === "0.00" ? '' : d.targetRunningHr}{d.targetRunningHr !== "0.00" ? ' hrs' : ''}</Td>
                                     <Td>{d.actualRunningHr == "0.00" ? "" : d.actualRunningHr}{d.actualRunningHr != "0.00" ? ' hrs' : ''}</Td>
                                     <Td>{d.standardProduction !== "0.00" ? d.standardProduction : ""}</Td>
                                     <Td>{d.actualProduction === "0.00" ? "" : d.actualProduction}</Td>
