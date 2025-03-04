@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import DataTable from "./DataTable";
 import { RangeDatepicker } from "chakra-dayzed-datepicker";
-import { Box, Button, Image, Spinner } from "@chakra-ui/react";
+import { Box, Button, Image, Spinner, Tooltip } from "@chakra-ui/react";
 import { addDays } from "date-fns";
 import { ChevronLeft, ChevronRight, CloudDownloadIcon } from "lucide-react";
 import axios from "axios";
@@ -85,12 +85,14 @@ const Dashboard = () => {
     return (
         <Box position={'relative'} minH={'100vh'}>
             <Box mt={2} gap={2} pb={3} borderBottom={'1px solid #e2e8f0'} justifyContent={["center", "space-around", "center", "right", "right"]} display={'flex'}>
-                {/* <Button
-                    onClick={() => downloadExcel()}
-                    isLoading={isDownloading}>
-                    {!isDownloading && <CloudDownloadIcon></CloudDownloadIcon>}
-                    {isDownloading && <Spinner size="sm" />}
-                </Button> */}
+                <Tooltip label="Download Excel" aria-label="A tooltip" placement="bottom">
+                    <Button
+                        // onClick={() => downloadExcel()}
+                        isLoading={isDownloading}>
+                        {!isDownloading && <CloudDownloadIcon></CloudDownloadIcon>}
+                        {isDownloading && <Spinner size="sm" />}
+                    </Button>
+                </Tooltip>
                 <Button onClick={() => handleStartDate(-1)}><ChevronLeft></ChevronLeft></Button>
                 {/* <Button display={["none", "block", "block"]} disabled={selectedDates[0]?.getTime() === selectedDates[1]?.getTime()} onClick={() => handleStartDate(1)}><ChevronRight></ChevronRight></Button> */}
                 <RangeDatepicker
@@ -114,7 +116,7 @@ const Dashboard = () => {
                 <Button onClick={() => handleEndDate(1)}><ChevronRight></ChevronRight></Button>
             </Box >
             {
-                isLoading && <FullScreenLoader isLoading={isLoading}/>
+                isLoading && <FullScreenLoader isLoading={isLoading} />
             }
             {tableData.length === 0 && <Box w={'full'} justifyContent={'center'} display={'flex'} mt={100}>
 
