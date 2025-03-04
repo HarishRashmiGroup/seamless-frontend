@@ -85,12 +85,12 @@ const Dashboard = () => {
     return (
         <Box position={'relative'} minH={'100vh'}>
             <Box mt={2} gap={2} pb={3} borderBottom={'1px solid #e2e8f0'} justifyContent={["center", "space-around", "center", "right", "right"]} display={'flex'}>
-                <Button
+                {/* <Button
                     onClick={() => downloadExcel()}
                     isLoading={isDownloading}>
                     {!isDownloading && <CloudDownloadIcon></CloudDownloadIcon>}
                     {isDownloading && <Spinner size="sm" />}
-                </Button>
+                </Button> */}
                 <Button display={["none", "block", "block"]} onClick={() => handleStartDate(-1)}><ChevronLeft></ChevronLeft></Button>
                 {/* <Button display={["none", "block", "block"]} disabled={selectedDates[0]?.getTime() === selectedDates[1]?.getTime()} onClick={() => handleStartDate(1)}><ChevronRight></ChevronRight></Button> */}
                 <RangeDatepicker
