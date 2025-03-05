@@ -574,15 +574,6 @@ export const HourlyProductionForm = () => {
                                     onWheel={(e) => e.target.blur()}
                                     required
                                 />
-                                <IconButton
-                                    mt={'4px'}
-                                    aria-label="Remove row"
-                                    icon={<Trash2Icon />}
-                                    onClick={() => removeDiaDetailsLine(index)}
-                                    colorScheme="red"
-                                    size="sm"
-                                    disabled={index == 0}
-                                />
                                 <Input
                                     bg={'white'}
                                     placeholder="No of Pcs"
@@ -591,6 +582,15 @@ export const HourlyProductionForm = () => {
                                     type="number"
                                     onWheel={(e) => e.target.blur()}
                                     required
+                                />
+                                <IconButton
+                                    mt={'4px'}
+                                    aria-label="Remove row"
+                                    icon={<Trash2Icon />}
+                                    onClick={() => removeDiaDetailsLine(index)}
+                                    colorScheme="red"
+                                    size="sm"
+                                    disabled={index == 0}
                                 />
                             </Stack>
                         ))}
