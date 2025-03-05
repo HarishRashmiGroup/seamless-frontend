@@ -549,15 +549,6 @@ export const HourlyProductionForm = () => {
                             <Stack p={1} key={index} direction={{ base: "column", md: "row" }} spacing={4} mb={1}>
                                 <Input
                                     bg={'white'}
-                                    placeholder="No of Pcs"
-                                    value={detail.nos ?? ''}
-                                    onChange={(e) => handleDiaDetailsChange(index, 'nos', e.target.value)}
-                                    type="number"
-                                    onWheel={(e) => e.target.blur()}
-                                    required
-                                />
-                                <Input
-                                    bg={'white'}
                                     placeholder="Diameter"
                                     value={detail.diameter ?? ''}
                                     onChange={(e) => handleDiaDetailsChange(index, 'diameter', e.target.value)}
@@ -591,6 +582,15 @@ export const HourlyProductionForm = () => {
                                     colorScheme="red"
                                     size="sm"
                                     disabled={index == 0}
+                                />
+                                <Input
+                                    bg={'white'}
+                                    placeholder="No of Pcs"
+                                    value={detail.nos ?? ''}
+                                    onChange={(e) => handleDiaDetailsChange(index, 'nos', e.target.value)}
+                                    type="number"
+                                    onWheel={(e) => e.target.blur()}
+                                    required
                                 />
                             </Stack>
                         ))}
