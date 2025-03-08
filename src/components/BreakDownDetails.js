@@ -18,7 +18,7 @@ import CreatableSelect from "react-select/creatable";
 import axios from "axios";
 
 const BreakdownDetails = ({ breakdownDetails, rootCauses, setRootCauses, departments, breakdownTypes, onChange, onAdd, onRemove, needRefresh }) => {
-    const user = useAuth();
+    const { user, setUser } = useAuth();
     const toast = useToast();
     const token = localStorage.getItem('token');
 
