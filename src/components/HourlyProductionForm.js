@@ -85,7 +85,7 @@ export const HourlyProductionForm = () => {
             const stdProdInMT = (Number(formData.machineId) == 20) ? (value * 6 * 1.8).toFixed(3) : (value * 6 * 2.1).toFixed(3);
             setFormData((prev) => ({ ...prev, [name]: value, stdProdMTPerHr: stdProdInMT }));
         } else if (name == 'machineId' && formData.mpm && (Number(formData.machineId) == 20 || Number(formData.machineId) == 21)) {
-            const stdProdInMT = (Number(value) == 20) ? (Number(formData.mpm) * 6 * 1.8).toFixed(3 ) : (Number(formData.mpm) * 6 * 2.1).toFixed(3);
+            const stdProdInMT = (Number(value) == 20) ? (Number(formData.mpm) * 6 * 1.8).toFixed(3) : (Number(formData.mpm) * 6 * 2.1).toFixed(3);
             setFormData((prev) => ({ ...prev, [name]: value, stdProdMTPerHr: stdProdInMT }));
         } else
             setFormData((prev) => ({ ...prev, [name]: value }));
@@ -240,8 +240,8 @@ export const HourlyProductionForm = () => {
         e.preventDefault();
         setIsSaving(true);
         try {
-            const response = await axios.post(formData.id ? `http://localhost:3001/hourly/prod/${formData.id}` : 'http://localhost:3001/hourly/prod', formData, {
-                // const response = await axios.post(formData.id ? `https://seamless-backend-nz7d.onrender.com/hourly/prod/${formData.id}` : 'https://seamless-backend-nz7d.onrender.com/hourly/prod', formData, {
+            // const response = await axios.post(formData.id ? `http://localhost:3001/hourly/prod/${formData.id}` : 'http://localhost:3001/hourly/prod', formData, {
+            const response = await axios.post(formData.id ? `https://seamless-backend-nz7d.onrender.com/hourly/prod/${formData.id}` : 'https://seamless-backend-nz7d.onrender.com/hourly/prod', formData, {
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`
@@ -372,8 +372,8 @@ export const HourlyProductionForm = () => {
     const fetchProductionData = async (machineId, date, shiftId) => {
         setIsLoading(true);
         try {
-            const response = await axios.get(`http://localhost:3001/hourly/prod?machineId=${machineId}&date=${date}&shiftId=${shiftId}`,
-                // const response = await axios.get(`https://seamless-backend-nz7d.onrender.com/hourly/prod?machineId=${machineId}&date=${date}&shiftId=${shiftId}`,
+            // const response = await axios.get(`http://localhost:3001/hourly/prod?machineId=${machineId}&date=${date}&shiftId=${shiftId}`,
+            const response = await axios.get(`https://seamless-backend-nz7d.onrender.com/hourly/prod?machineId=${machineId}&date=${date}&shiftId=${shiftId}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`
