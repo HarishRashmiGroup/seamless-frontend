@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import {
     Box,
     FormControl,
@@ -16,6 +16,7 @@ import {
     Radio,
     IconButton,
     Spinner,
+    Tooltip,
 } from '@chakra-ui/react';
 import { CirclePlusIcon, Trash2Icon } from "lucide-react";
 import BreakdownDetails from "./BreakDownDetails";
@@ -80,47 +81,98 @@ export const HourlyProductionForm = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
+        if (name == 'mpm') {
+            const stdProdInMT = (Number(formData.machineId) == 20) ? (value * 6 * 1.8).toFixed(3) : (value * 6 * 2.1).toFixed(3);
+            setFormData((prev) => ({ ...prev, [name]: value, stdProdMTPerHr: stdProdInMT }));
+        } else if (name == 'machineId' && formData.mpm && (Number(formData.machineId) == 20 || Number(formData.machineId) == 21)) {
+            const stdProdInMT = (Number(value) == 20) ? (Number(formData.mpm) * 6 * 1.8).toFixed(3 ) : (Number(formData.mpm) * 6 * 2.1).toFixed(3);
+            setFormData((prev) => ({ ...prev, [name]: value, stdProdMTPerHr: stdProdInMT }));
+        } else
+            setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
     const calculateWeight = (nos, diameter, length, thickness) => {
         return ((diameter - thickness) * thickness * 0.02467 * length * nos) / 1000;
     };
 
+    const calculateOutputLength = (dia, wt, length, outputDia, outputWt) => {
+        const PI = Math.PI;
+        const hollowArea = (dia - wt) * wt * PI;
+        const finalArea = (outputDia - outputWt) * outputWt * PI;
+        const elongation = hollowArea / finalArea;
+        return (length - 0.81) * elongation;
+    };
+
+    const calculateStandardProduction = (pipes, machineCapacityKg = 6000, efficiency = 0.98) => {
+        let totalPcs = 0;
+        let totalWeightedWeight = 0;
+
+        pipes.forEach(pipe => {
+            const { mt, pcs } = pipe;
+            const avgWeight = (mt * 1000) / pcs;
+            totalPcs += pcs;
+            totalWeightedWeight += avgWeight * pcs;
+        });
+
+        const avgCombinedWeight = totalWeightedWeight / totalPcs;
+        const standardPcs = (machineCapacityKg * efficiency) / avgCombinedWeight;
+        return Math.round(standardPcs);
+    };
+
     const handleDiaDetailsChange = (index, field, value) => {
         const newDiaDetails = [...formData.diaDetails];
         newDiaDetails[index][field] = value;
 
-        const totalPcs = newDiaDetails.reduce((sum, d) => {
-            const nos = Number(d.nos);
-            return sum + (isNaN(nos) ? 0 : nos);
-        }, 0);
+        const dia = Number(newDiaDetails[index]['diameter']);
+        const wl = Number(newDiaDetails[index]['thickness']);
+        const len = Number(newDiaDetails[index]['length']);
+        const outDia = Number(newDiaDetails[index]['outputDiameter']);
+        const outWt = Number(newDiaDetails[index]['outputThickness']);
 
-        const totalWeight = newDiaDetails.reduce((sum, d) => {
-            const nos = Number(d.nos);
-            const diameter = Number(d.diameter);
-            const thickness = Number(d.thickness);
-            const length = Number(d.length);
+        if ([dia, wl, len, outDia, outWt].every(n => !isNaN(n) && n > 0)) {
+            const outLen = calculateOutputLength(dia, wl, len, outDia, outWt);
+            newDiaDetails[index]['outputLength'] = outLen.toFixed(2);
+        }
 
-            if (!isNaN(nos) && !isNaN(diameter) && !isNaN(thickness) && !isNaN(length) &&
-                nos > 0 && diameter > 0 && thickness > 0 && length > 0) {
-                return sum + calculateWeight(nos, diameter, length, thickness);
+        let totalPcs = 0;
+        let totalWeight = 0;
+
+        const pipeSummaries = [];
+
+        newDiaDetails.forEach(d => {
+            const pcs = Number(d.nos);
+            const dia = Number(d.diameter);
+            const wt = Number(d.thickness);
+            const len = Number(d.length);
+
+            if ([pcs, dia, wt, len].every(n => !isNaN(n) && n > 0)) {
+                const weight = calculateWeight(pcs, dia, len, wt);
+                totalPcs += pcs;
+                totalWeight += weight;
+                pipeSummaries.push({ pcs, mt: weight });
             }
-            return sum;
-        }, 0);
+        });
 
-        setFormData((prev) => ({
+        let standardProductionPerHrPcs = null;
+
+        if ([1, 2, 3, '1', '2', '3'].includes(formData.machineId)) {
+            standardProductionPerHrPcs = calculateStandardProduction(pipeSummaries);
+        }
+
+        setFormData(prev => ({
             ...prev,
             diaDetails: newDiaDetails,
             actProdPerHr: totalPcs,
-            actProdMTPerHr: totalWeight.toFixed(2),
+            actProdMTPerHr: totalWeight.toFixed(3),
+            stdProdPerHr: standardProductionPerHrPcs ?? formData.stdProdPerHr
         }));
     };
+
 
     const addDiaDetailsLine = () => {
         setFormData((prev) => ({
             ...prev,
-            diaDetails: [...prev.diaDetails, { diameter: '', nos: '', thickness: '', length: '' }],
+            diaDetails: [...prev.diaDetails, { diameter: '', nos: '', thickness: '', length: '', outputDiameter: '', outputLength: '', outputThickness: '' }],
         }));
     };
 
@@ -188,7 +240,8 @@ export const HourlyProductionForm = () => {
         e.preventDefault();
         setIsSaving(true);
         try {
-            const response = await axios.post(formData.id ? `https://seamless-backend-nz7d.onrender.com/hourly/prod/${formData.id}` : 'https://seamless-backend-nz7d.onrender.com/hourly/prod', formData, {
+            const response = await axios.post(formData.id ? `http://localhost:3001/hourly/prod/${formData.id}` : 'http://localhost:3001/hourly/prod', formData, {
+                // const response = await axios.post(formData.id ? `https://seamless-backend-nz7d.onrender.com/hourly/prod/${formData.id}` : 'https://seamless-backend-nz7d.onrender.com/hourly/prod', formData, {
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`
@@ -319,7 +372,8 @@ export const HourlyProductionForm = () => {
     const fetchProductionData = async (machineId, date, shiftId) => {
         setIsLoading(true);
         try {
-            const response = await axios.get(`https://seamless-backend-nz7d.onrender.com/hourly/prod?machineId=${machineId}&date=${date}&shiftId=${shiftId}`,
+            const response = await axios.get(`http://localhost:3001/hourly/prod?machineId=${machineId}&date=${date}&shiftId=${shiftId}`,
+                // const response = await axios.get(`https://seamless-backend-nz7d.onrender.com/hourly/prod?machineId=${machineId}&date=${date}&shiftId=${shiftId}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`
@@ -382,13 +436,13 @@ export const HourlyProductionForm = () => {
     }, [formData.machineId, formData.date, formData.shiftId]);
 
     return (
-        <Box p={6} maxWidth="1000px" margin="auto">
+        <Box maxWidth="1000px" margin="auto">
             <FullScreenLoader isLoading={isLoading} />
             <form onSubmit={handleSubmit}>
                 <VStack spacing={6}>
 
                     {/* Machine and Shift Details */}
-                    <Box width="full " bg={'gray.100'} p={1} borderRadius={'md'}>
+                    <Box width="full" p={6} bg={'gray.100'} borderRadius={'md'}>
                         <Text userSelect={'none'} fontSize="xl" mb={4} borderBottom={'1px solid gray'} >Machine and Shift Details <span style={{ fontSize: '16px', color: 'red' }}>*</span></Text>
                         <Stack direction={{ base: "column", md: "row" }} spacing={4} width="full">
                             <FormControl isRequired>
@@ -454,19 +508,35 @@ export const HourlyProductionForm = () => {
                                     onChange={handleChange}
                                 />
                             </FormControl>
-                            <FormControl>
-                                <FormLabel userSelect={'none'}>Machine running status</FormLabel>
-                                <RadioGroup h={'full'} mt={'16px'} value={running ? "true" : "false"} onChange={(e) => setRunning(e === "true" ? true : false)}>
-                                    <HStack gap={6}>
-                                        <Radio cursor={'pointer'} value="true">Run</Radio>
-                                        <Radio cursor={'pointer'} value="false">Not Run</Radio>
-                                    </HStack>
-                                </RadioGroup>
-                            </FormControl>
+                            {[20, 21].includes(Number(formData.machineId)) &&
+                                <FormControl isRequired>
+                                    <FormLabel>Meter per Minute</FormLabel>
+                                    <Input
+                                        bg={'white'}
+                                        name="mpm"
+                                        value={formData.mpm}
+                                        type="number"
+                                        onWheel={(e) => e.target.blur()}
+                                        onChange={handleChange}
+                                        autoComplete="false"
+                                    />
+                                </FormControl>
+                            }
+                            {Number(formData.machineId) != 20 && Number(formData.machineId) != 21 &&
+                                <FormControl>
+                                    <FormLabel userSelect={'none'}>Machine running status</FormLabel>
+                                    <RadioGroup h={'full'} mt={'16px'} value={running ? "true" : "false"} onChange={(e) => setRunning(e === "true" ? true : false)}>
+                                        <HStack gap={6}>
+                                            <Radio cursor={'pointer'} value="true">Run</Radio>
+                                            <Radio cursor={'pointer'} value="false">Not Run</Radio>
+                                        </HStack>
+                                    </RadioGroup>
+                                </FormControl>
+                            }
                         </Stack>
                     </Box>
                     {/* Operator Details */}
-                    <Box width="full" bg={'gray.100'} p={1} borderRadius={'md'}>
+                    <Box width="full" bg={'gray.100'} p={6} borderRadius={'md'}>
                         <Text userSelect={'none'} fontSize="xl" mb={4} borderBottom={'1px solid gray'}>Basic Details</Text>
                         <Stack direction={{ base: "column", md: "row" }} spacing={4}>
                             <FormControl isRequired>
@@ -479,7 +549,7 @@ export const HourlyProductionForm = () => {
                                     autoComplete="false"
                                 />
                             </FormControl>
-                            <FormControl isRequired>
+                            <FormControl>
                                 <FormLabel userSelect={'none'}>Operator Phone No</FormLabel>
                                 <Input
                                     bg={'white'}
@@ -503,7 +573,7 @@ export const HourlyProductionForm = () => {
                                     autoComplete="false"
                                 />
                             </FormControl>
-                            <FormControl isRequired>
+                            <FormControl>
                                 <FormLabel userSelect={'none'}>Shift Incharge Phone No.</FormLabel>
                                 <Input
                                     bg={'white'}
@@ -527,7 +597,7 @@ export const HourlyProductionForm = () => {
                                     autoComplete="false"
                                 />
                             </FormControl>
-                            <FormControl isRequired>
+                            <FormControl>
                                 <FormLabel userSelect={'none'}>Shift Supervisor PhoneNo</FormLabel>
                                 <Input
                                     bg={'white'}
@@ -543,56 +613,129 @@ export const HourlyProductionForm = () => {
                     </Box>
 
                     {/* Dia Details */}
-                    <Box width="full" bg={'gray.100'} borderRadius={'md'} p={1}>
+                    <Box width="full" position={'relative'} bg={'gray.100'} borderRadius={'md'} p={6}>
                         <Text userSelect={'none'} fontSize="xl" mb={4} borderBottom={'1px solid gray'} >Dia Details <span style={{ fontSize: '16px', color: 'red' }}>*</span></Text>
                         {formData.diaDetails.map((detail, index) => (
-                            <Stack p={1} key={index} direction={{ base: "column", md: "row" }} spacing={4} mb={1}>
-                                <Input
-                                    bg={'white'}
-                                    placeholder="Diameter"
-                                    value={detail.diameter ?? ''}
-                                    onChange={(e) => handleDiaDetailsChange(index, 'diameter', e.target.value)}
-                                    type="number"
-                                    onWheel={(e) => e.target.blur()}
-                                    required
-                                />
-                                <Input
-                                    bg={'white'}
-                                    placeholder="Thickness"
-                                    value={detail.thickness ?? ''}
-                                    onChange={(e) => handleDiaDetailsChange(index, 'thickness', e.target.value)}
-                                    type="number"
-                                    onWheel={(e) => e.target.blur()}
-                                    required
-                                />
-                                <Input
-                                    bg={'white'}
-                                    placeholder="Length"
-                                    value={detail.length ?? ''}
-                                    onChange={(e) => handleDiaDetailsChange(index, 'length', e.target.value)}
-                                    type="number"
-                                    onWheel={(e) => e.target.blur()}
-                                    required
-                                />
-                                <Input
-                                    bg={'white'}
-                                    placeholder="No of Pcs"
-                                    value={detail.nos ?? ''}
-                                    onChange={(e) => handleDiaDetailsChange(index, 'nos', e.target.value)}
-                                    type="number"
-                                    onWheel={(e) => e.target.blur()}
-                                    required
-                                />
-                                <IconButton
-                                    mt={'4px'}
-                                    aria-label="Remove row"
-                                    icon={<Trash2Icon />}
-                                    onClick={() => removeDiaDetailsLine(index)}
-                                    colorScheme="red"
-                                    size="sm"
-                                    disabled={index == 0}
-                                />
-                            </Stack>
+                            <Fragment key={index}>
+                                <Stack p={1} mt={index != 0 ? 4 : 'auto'} direction={{ base: "column", md: "row" }} spacing={4} mb={1}>
+                                    <FormControl isRequired>
+                                        <FormLabel>Dia(mm)</FormLabel>
+                                        <Input
+                                            bg={'white'}
+                                            placeholder="Diameter"
+                                            value={detail.diameter ?? ''}
+                                            onChange={(e) => handleDiaDetailsChange(index, 'diameter', e.target.value)}
+                                            type="number"
+                                            onWheel={(e) => e.target.blur()}
+                                            required
+                                        />
+                                    </FormControl>
+                                    <FormControl isRequired>
+                                        <FormLabel>WT(mm)</FormLabel>
+                                        <Input
+                                            bg={'white'}
+                                            placeholder="Thickness"
+                                            value={detail.thickness ?? ''}
+                                            onChange={(e) => handleDiaDetailsChange(index, 'thickness', e.target.value)}
+                                            type="number"
+                                            onWheel={(e) => e.target.blur()}
+                                            required
+                                        />
+                                    </FormControl>
+                                    <FormControl isRequired>
+                                        <FormLabel>Length(Mtr)</FormLabel>
+                                        <Input
+                                            bg={'white'}
+                                            placeholder="Length"
+                                            value={detail.length ?? ''}
+                                            onChange={(e) => handleDiaDetailsChange(index, 'length', e.target.value)}
+                                            type="number"
+                                            onWheel={(e) => e.target.blur()}
+                                            required
+                                        />
+                                    </FormControl>
+                                    <FormControl isRequired>
+                                        <FormLabel>Pcs</FormLabel>
+                                        <Input
+                                            bg={'white'}
+                                            placeholder="No of Pcs"
+                                            value={detail.nos ?? ''}
+                                            onChange={(e) => handleDiaDetailsChange(index, 'nos', e.target.value)}
+                                            type="number"
+                                            onWheel={(e) => e.target.blur()}
+                                            required
+                                        />
+                                    </FormControl>
+                                    <IconButton
+                                        mt={{ base: '4px', md: '36px' }}
+                                        aria-label="Remove row"
+                                        icon={<Trash2Icon />}
+                                        onClick={() => removeDiaDetailsLine(index)}
+                                        colorScheme="red"
+                                        size="sm"
+                                        disabled={index == 0}
+                                    />
+                                </Stack>
+                                {formData.machineId && Number(formData.machineId) >= 8 && Number(formData.machineId) <= 19 &&
+                                    <Stack p={1} direction={{ base: "column", md: "row" }} spacing={4} mb={1}>
+                                        <FormControl isRequired>
+                                            <FormLabel>Output Dia(mm)</FormLabel>
+                                            <Input
+                                                bg={'white'}
+                                                placeholder="Diameter"
+                                                value={detail.outputDiameter ?? ''}
+                                                onChange={(e) => handleDiaDetailsChange(index, 'outputDiameter', e.target.value)}
+                                                type="number"
+                                                onWheel={(e) => e.target.blur()}
+                                                required
+                                            />
+                                        </FormControl>
+                                        <FormControl isRequired>
+                                            <FormLabel>Output WT(mm)</FormLabel>
+                                            <Input
+                                                bg={'white'}
+                                                placeholder="Thickness"
+                                                value={detail.outputThickness ?? ''}
+                                                onChange={(e) => handleDiaDetailsChange(index, 'outputThickness', e.target.value)}
+                                                type="number"
+                                                onWheel={(e) => e.target.blur()}
+                                                required
+                                            />
+                                        </FormControl>
+                                        <Tooltip label="Auto Calculated Field">
+                                            <FormControl isRequired>
+                                                <FormLabel>Output Length(Mtr)</FormLabel>
+                                                <Input
+                                                    bg={'white'}
+                                                    placeholder="Length"
+                                                    value={detail.outputLength ?? ''}
+                                                    onChange={(e) => handleDiaDetailsChange(index, 'outputLength', e.target.value)}
+                                                    type="number"
+                                                    onWheel={(e) => e.target.blur()}
+                                                    required
+                                                />
+                                            </FormControl>
+                                        </Tooltip>
+                                        <FormControl >
+                                            <FormLabel display={'none'}>Pcs</FormLabel>
+                                            <Input
+                                                display={'none'}
+                                            />
+                                        </FormControl>
+                                        <IconButton
+                                            mt={{ base: '4px', md: '36px' }}
+                                            aria-label="Remove row"
+                                            icon={<Trash2Icon opacity={0} />}
+                                            onClick={() => removeDiaDetailsLine(index)}
+                                            size="sm"
+                                            opacity={0}
+                                            h={0}
+                                            p={0}
+                                            disabled={true}
+                                        />
+                                    </Stack>
+                                }
+                            </Fragment>
                         ))}
                         <Button onClick={addDiaDetailsLine} className="bg-teal-500 hover:bg-teal-600 text-white" size={'sm'}>
                             <CirclePlusIcon />
@@ -600,7 +743,7 @@ export const HourlyProductionForm = () => {
                     </Box>
 
                     {/* Production Details */}
-                    <Box width="full " bg={'gray.100'} p={1} borderRadius={'md'}>
+                    <Box width="full " bg={'gray.100'} p={6} borderRadius={'md'}>
                         <Text userSelect={'none'} fontSize="xl" mb={4} borderBottom={'1px solid gray'}>Production Details</Text>
                         <Stack direction={{ base: "column", md: "row" }} spacing={4} mb={4}>
                             <FormControl isRequired>
@@ -614,17 +757,19 @@ export const HourlyProductionForm = () => {
                                     onChange={handleChange}
                                 />
                             </FormControl>
-                            <FormControl isRequired isReadOnly>
-                                <FormLabel userSelect={'none'}>Actual Production/HR(nos)</FormLabel>
-                                <Input
-                                    bg={'white'}
-                                    name="actProdPerHr"
-                                    type="number"
-                                    value={formData.actProdPerHr ?? ''}
-                                    onWheel={(e) => e.target.blur()}
-                                    onChange={handleChange}
-                                />
-                            </FormControl>
+                            <Tooltip label="Auto Calculated Field" hasArrow>
+                                <FormControl isRequired isReadOnly>
+                                    <FormLabel userSelect={'none'}>Actual Production/HR(nos)</FormLabel>
+                                    <Input
+                                        bg={'white'}
+                                        name="actProdPerHr"
+                                        type="number"
+                                        value={formData.actProdPerHr ?? ''}
+                                        onWheel={(e) => e.target.blur()}
+                                        onChange={handleChange}
+                                    />
+                                </FormControl>
+                            </Tooltip>
                         </Stack>
                         <Stack direction={{ base: "column", md: "row" }} spacing={4}>
                             <FormControl isRequired>
@@ -638,53 +783,62 @@ export const HourlyProductionForm = () => {
                                     onChange={handleChange}
                                 />
                             </FormControl>
-                            <FormControl isRequired>
-                                <FormLabel userSelect={'none'}>Actual Production/HR(MT)</FormLabel>
-                                <Input
-                                    bg={'white'}
-                                    name="actProdMTPerHr"
-                                    type="number"
-                                    value={formData.actProdMTPerHr ?? ''}
-                                    onWheel={(e) => e.target.blur()}
-                                    onChange={handleChange}
-                                />
-                            </FormControl>
+                            <Tooltip label="Auto Calculated Field" hasArrow>
+                                <FormControl isRequired>
+                                    <FormLabel userSelect={'none'}>Actual Production/HR(MT)</FormLabel>
+                                    <Input
+                                        bg={'white'}
+                                        name="actProdMTPerHr"
+                                        type="number"
+                                        value={formData.actProdMTPerHr ?? ''}
+                                        onWheel={(e) => e.target.blur()}
+                                        onChange={handleChange}
+                                    />
+                                </FormControl>
+                            </Tooltip>
                         </Stack>
                         <Stack direction={{ base: "column", md: "row" }} spacing={4} mt={4}>
-                            <FormControl isReadOnly>
-                                <FormLabel userSelect={'none'}>Difference(nos)</FormLabel>
-                                <Input
-                                    bg={'white'}
-                                    name="Difference(nos)"
-                                    type="number"
-                                    value={(formData.stdProdPerHr - formData.actProdPerHr) ?? ''}
 
-                                />
-                            </FormControl>
-                            <FormControl isReadOnly>
-                                <FormLabel userSelect={'none'}>Difference(MT)</FormLabel>
-                                <Input
-                                    bg={'white'}
-                                    name="Difference(MT)"
-                                    type="number"
-                                    value={(formData.stdProdMTPerHr - formData.actProdMTPerHr) ?? ''}
+                            <Tooltip label="Auto Calculated Field" hasArrow>
+                                <FormControl isReadOnly>
+                                    <FormLabel userSelect={'none'}>Difference(nos)</FormLabel>
+                                    <Input
+                                        bg={'white'}
+                                        name="Difference(nos)"
+                                        type="number"
+                                        value={(formData.stdProdPerHr - formData.actProdPerHr).toFixed(2) ?? ''}
 
-                                />
-                            </FormControl>
-                            <FormControl isReadOnly>
-                                <FormLabel userSelect={'none'}>Running Mins</FormLabel>
-                                <Input
-                                    bg={'white'}
-                                    name="runningMints"
-                                    type="number"
-                                    value={formData.runningMints ?? ''}
+                                    />
+                                </FormControl>
+                            </Tooltip>
+                            <Tooltip label="Auto Calculated Field" hasArrow>
+                                <FormControl isReadOnly>
+                                    <FormLabel userSelect={'none'}>Difference(MT)</FormLabel>
+                                    <Input
+                                        bg={'white'}
+                                        name="Difference(MT)"
+                                        type="number"
+                                        value={(formData.stdProdMTPerHr - formData.actProdMTPerHr).toFixed(3) ?? ''}
 
-                                />
-                            </FormControl>
+                                    />
+                                </FormControl>
+                            </Tooltip>
+                            <Tooltip label="Auto Calculated Field" hasArrow>
+                                <FormControl isReadOnly>
+                                    <FormLabel userSelect={'none'}>Running Mins</FormLabel>
+                                    <Input
+                                        bg={'white'}
+                                        name="runningMints"
+                                        type="number"
+                                        value={formData.runningMints ?? ''}
+
+                                    />
+                                </FormControl>
+                            </Tooltip>
                         </Stack>
                     </Box>
 
-                    <Box width="full" bg={'gray.100'} p={1} borderRadius={'md'}>
+                    <Box width="full" bg={'gray.100'} p={6} borderRadius={'md'}>
                         <BreakdownDetails
                             width="full"
                             breakdownDetails={formData.breakdownDetails}

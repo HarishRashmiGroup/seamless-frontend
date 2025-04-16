@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ClipboardPlusIcon, Clock, LayoutDashboardIcon, LogIn, LogOut, Menu, WrenchIcon, X } from 'lucide-react';
+import { ClipboardPlusIcon, Clock, HomeIcon, LayoutDashboardIcon, LogIn, LogOut, Menu, WrenchIcon, X } from 'lucide-react';
 import {
     Box,
     Flex,
@@ -48,21 +48,20 @@ const Navbar = () => {
             px={4}
             shadow="md"
             position="fixed"
-            top={isVisible ? 0 : "-90px"}
+            top={isVisible ? 0 : "-70px"}
             left={0}
             right={0}
             zIndex={1000}
-            height="80px"
-            transition="top 0.3s"
+            minH="65px"
+            transition="top 0.5s"
             alignItems={'center'}
         >
             <Flex alignItems="center" justifyContent="space-between" height="full">
                 <Flex display={{ base: "flex", md: "none" }}></Flex>
                 <Image
                     src="https://www.rashmiseamless.com/wp-content/uploads/2022/06/RASHMI-Group-white.png"
-                    // src='https://blackbucks-media.s3.ap-south-1.amazonaws.com/Rashmi%20group%20logo%20White%20Bar-1738846415526.png'
                     alt="Rashmi"
-                    maxWidth="170px"
+                    maxW={{ base: "130px", md: "130px" }}
                     objectFit="contain"
                     cursor={'pointer'}
                     onClick={() => navigate('/')}
@@ -71,11 +70,11 @@ const Navbar = () => {
                 />
 
                 <Flex gap={4} display={{ base: "none", md: "flex" }}>
-                    {user && user.role != 'operator' && user.role != 'maintenance' && <Button leftIcon={<Icon as={LayoutDashboardIcon} w={5} h={5} />} colorScheme={location.pathname === '/' ? "blue" : "gray"} variant="solid" onClick={() => { navigate('/') }}>Dashboard</Button>}
-                    {user && user.role != 'operator' && <Button leftIcon={<Icon as={WrenchIcon} w={5} h={5} />} colorScheme={location.pathname === '/maintenance' ? "blue" : "gray"} variant="solid" onClick={() => { navigate('/maintenance') }}>Maintenance</Button>}
-                    {user && <Button leftIcon={<Icon as={ClipboardPlusIcon} w={5} h={5} />} colorScheme={location.pathname === '/hourly' ? "blue" : "gray"} variant="solid" onClick={() => { navigate('/hourly') }}>Hourly Report</Button>}
-                    {user && user.role != 'operator' && <Button leftIcon={<Icon as={Clock} w={5} h={5} />} colorScheme={location.pathname === '/shift-report' ? "blue" : "gray"} variant="solid" onClick={() => { navigate('/shift-report') }}>Shift Report</Button>}
-                    {location.pathname != '/login' && <Button leftIcon={<Icon as={LogOut} w={5} h={5} />} colorScheme={"red"} variant="solid"
+                    {user && user.role != 'operator' && user.role != 'maintenance' && <Button size={'sm'} leftIcon={<Icon w={5} h={5} as={LayoutDashboardIcon} />} colorScheme={location.pathname === '/' ? "blue" : "gray"} variant="solid" onClick={() => { navigate('/') }}>Dashboard</Button>}
+                    {user && user.role != 'operator' && <Button size={'sm'} leftIcon={<Icon as={WrenchIcon} w={5} h={5} />} colorScheme={location.pathname === '/maintenance' ? "blue" : "gray"} variant="solid" onClick={() => { navigate('/maintenance') }}>Maintenance</Button>}
+                    {user && <Button size={'sm'} leftIcon={<Icon as={ClipboardPlusIcon} w={5} h={5} />} colorScheme={location.pathname === '/hourly' ? "blue" : "gray"} variant="solid" onClick={() => { navigate('/hourly') }}>Hourly Report</Button>}
+                    {user && user.role != 'operator' && <Button size={'sm'} leftIcon={<Icon as={Clock} w={5} h={5} />} colorScheme={location.pathname === '/shift-report' ? "blue" : "gray"} variant="solid" onClick={() => { navigate('/shift-report') }}>Shift Report</Button>}
+                    {location.pathname != '/login' && <Button size={'sm'} leftIcon={<Icon as={LogOut} w={5} h={5} />} colorScheme={"red"} variant="solid"
                         onClick={() => {
                             localStorage.removeItem('token');
                             navigate('/login');
