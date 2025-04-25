@@ -69,7 +69,7 @@ export const HourlyProductionForm = () => {
         shiftId: initialValues.shiftId,
         shiftLetter: initialValues.shiftLetter,
         date: '',
-        status: true,
+        runTime: 60,
         diaDetails: [{ diameter: '', nos: '', thickness: '', length: '' }],
         breakdownDetails: [],
         stdProdPerHr: '',
@@ -87,7 +87,8 @@ export const HourlyProductionForm = () => {
         } else if (name == 'machineId' && formData.mpm && (Number(formData.machineId) == 20 || Number(formData.machineId) == 21)) {
             const stdProdInMT = (Number(value) == 20) ? (Number(formData.mpm) * 6 * 1.8).toFixed(3) : (Number(formData.mpm) * 6 * 2.1).toFixed(3);
             setFormData((prev) => ({ ...prev, [name]: value, stdProdMTPerHr: stdProdInMT }));
-        } else
+        }
+        else
             setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
@@ -155,8 +156,11 @@ export const HourlyProductionForm = () => {
 
         let standardProductionPerHrPcs = null;
 
-        if ([1, 2, 3, '1', '2', '3'].includes(formData.machineId)) {
+        if ([1, 3, '1', '3'].includes(formData.machineId)) {
             standardProductionPerHrPcs = calculateStandardProduction(pipeSummaries);
+        }
+        if ([2, '2'].includes(formData.machineId)) {
+            standardProductionPerHrPcs = calculateStandardProduction(pipeSummaries, 4000);
         }
 
         setFormData(prev => ({
@@ -522,17 +526,19 @@ export const HourlyProductionForm = () => {
                                     />
                                 </FormControl>
                             }
-                            {Number(formData.machineId) != 20 && Number(formData.machineId) != 21 &&
-                                <FormControl>
-                                    <FormLabel userSelect={'none'}>Machine running status</FormLabel>
-                                    <RadioGroup h={'full'} mt={'16px'} value={running ? "true" : "false"} onChange={(e) => setRunning(e === "true" ? true : false)}>
-                                        <HStack gap={6}>
-                                            <Radio cursor={'pointer'} value="true">Run</Radio>
-                                            <Radio cursor={'pointer'} value="false">Not Run</Radio>
-                                        </HStack>
-                                    </RadioGroup>
-                                </FormControl>
-                            }
+                            <FormControl>
+                                <FormLabel userSelect={'none'}>Run Time(mint)</FormLabel>
+                                <Input
+                                    bg={'white'}
+                                    name="runTime"
+                                    value={formData.runTime}
+                                    type="number"
+                                    onWheel={(e) => e.target.blur()}
+                                    onChange={handleChange}
+                                    autoComplete="false"
+                                />
+                            </FormControl>
+
                         </Stack>
                     </Box>
                     {/* Operator Details */}
@@ -778,7 +784,10 @@ export const HourlyProductionForm = () => {
                                     bg={'white'}
                                     name="stdProdMTPerHr"
                                     type="number"
-                                    value={formData.stdProdMTPerHr ?? ''}
+                                    value={formData.stdProdMTPerHr ||
+                                        (formData.actProdPerHr
+                                            ? ((formData.actProdMTPerHr / formData.actProdPerHr) * formData.stdProdPerHr).toFixed(3)
+                                            : "")}
                                     onWheel={(e) => e.target.blur()}
                                     onChange={handleChange}
                                 />
@@ -806,7 +815,7 @@ export const HourlyProductionForm = () => {
                                         bg={'white'}
                                         name="Difference(nos)"
                                         type="number"
-                                        value={(formData.stdProdPerHr - formData.actProdPerHr).toFixed(2) ?? ''}
+                                        value={(formData.stdProdPerHr * (formData.runTime ? (formData.runTime / 60) : 1) - formData.actProdPerHr).toFixed(2) ?? ''}
 
                                     />
                                 </FormControl>
@@ -818,7 +827,7 @@ export const HourlyProductionForm = () => {
                                         bg={'white'}
                                         name="Difference(MT)"
                                         type="number"
-                                        value={(formData.stdProdMTPerHr - formData.actProdMTPerHr).toFixed(3) ?? ''}
+                                        value={(formData.stdProdMTPerHr * (formData.runTime ? (formData.runTime / 60) : 1) - formData.actProdMTPerHr).toFixed(3) ?? ''}
 
                                     />
                                 </FormControl>
