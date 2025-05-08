@@ -24,6 +24,7 @@ import { useAuth } from "../providers/authProvider";
 import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 import FullScreenLoader from "./FullScreenLoader";
+import CustomSelect from "./CustomSelect";
 
 export const HourlyProductionForm = () => {
     const toast = useToast();
@@ -33,6 +34,7 @@ export const HourlyProductionForm = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [shiftLoading, setShiftLoading] = useState(false);
+    const [machineLoading, setMachineLoading] = useState(false);
     const [initialValues] = useMemo(() => {
         const machineParam = searchParams.get('machine');
         const dateParam = searchParams.get('date');
@@ -96,6 +98,7 @@ export const HourlyProductionForm = () => {
     };
 
     const handleChange = (e) => {
+        console.log(e)
         const { name, value } = e.target;
         let updates = { [name]: value };
 
@@ -349,6 +352,7 @@ export const HourlyProductionForm = () => {
 
     const fetchMachines = async () => {
         try {
+            setMachineLoading(true);
             const response = await axios.get('https://seamless-backend-nz7d.onrender.com/basic/machines',
                 {
                     headers: {
@@ -370,6 +374,8 @@ export const HourlyProductionForm = () => {
                 duration: 1000,
                 isClosable: true,
             });
+        } finally {
+            setMachineLoading(false);
         }
     };
 
@@ -520,7 +526,7 @@ export const HourlyProductionForm = () => {
                         <Stack direction={{ base: "column", md: "row" }} spacing={4} width="full">
                             <FormControl isRequired>
                                 <FormLabel userSelect={'none'}>Machine</FormLabel>
-                                <Select
+                                {/* <Select
                                     bg={'white'}
                                     placeholder="Select Machine"
                                     value={formData.machineId}
@@ -532,7 +538,25 @@ export const HourlyProductionForm = () => {
                                             {machine.label}
                                         </option>
                                     ))}
-                                </Select>
+                                </Select> */}
+                                <CustomSelect
+                                    borderRadius="md"
+                                    borderColor="#cccccc"
+                                    size="md"
+                                    bg="gray.50"
+                                    name='machineId'
+                                    isLoading={machineLoading}
+                                    value={formData.machineId}
+                                    defaultOption={{ value: '', label: 'Select Machine' }}
+                                    onChange={(e) => handleChange(e)}
+                                    iconColor="#3182ce"
+                                    _hover={{ borderColor: '#3182ce' }}
+                                    _focus={{ borderColor: '#3182ce' }}
+                                    options={[
+                                        { value: '', label: 'Select Machine' },
+                                        ...machines?.map(machine => ({ value: machine.id, label: machine.label }))
+                                    ]}
+                                />
                             </FormControl>
                             <HStack width={'full'}>
                                 <FormControl isRequired>
