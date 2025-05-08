@@ -77,24 +77,48 @@ export const HourlyProductionForm = () => {
         runningMints: '',
         stdProdMTPerHr: '',
         actProdMTPerHr: '',
+        mpm: '',
     });
+
+    // Function to calculate standard production in MT based on machine type and MPM
+    const calculateStdProdMTPerHr = (machineId, mpm, actProdMTPerHr, actProdPerHr, stdProdPerHr) => {
+        // For machines 20 and 21, use MPM-based calculation
+        if ([20, 21, '20', '21'].includes(Number(machineId)) && mpm) {
+            const factor = Number(machineId) === 20 ? 1.8 : 2.1;
+            return (Number(mpm) * 6 * factor).toFixed(3);
+        }
+        // For other machines with actual production data, calculate based on actuals and standard
+        else if (actProdPerHr && actProdMTPerHr && stdProdPerHr) {
+            return ((actProdMTPerHr / actProdPerHr) * stdProdPerHr).toFixed(3);
+        }
+        // Return current value if no calculation possible
+        return '';
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        if (name == 'mpm') {
-            const stdProdInMT = (Number(formData.machineId) == 20) ? (value * 6 * 1.8).toFixed(3) : (value * 6 * 2.1).toFixed(3);
-            setFormData((prev) => ({ ...prev, [name]: value, stdProdMTPerHr: stdProdInMT }));
-        } else if (name == 'machineId' && formData.mpm && (Number(formData.machineId) == 20 || Number(formData.machineId) == 21)) {
-            const stdProdInMT = (Number(value) == 20) ? (Number(formData.mpm) * 6 * 1.8).toFixed(3) : (Number(formData.mpm) * 6 * 2.1).toFixed(3);
-            setFormData((prev) => ({ ...prev, [name]: value, stdProdMTPerHr: stdProdInMT }));
+        let updates = { [name]: value };
+
+        // If mpm or machineId changes for machines 20 or 21, recalculate stdProdMTPerHr
+        if (name === 'mpm' || (name === 'machineId' && [20, 21, '20', '21'].includes(Number(value)))) {
+            const machineId = name === 'machineId' ? value : formData.machineId;
+            const mpm = name === 'mpm' ? value : formData.mpm;
+
+            if ([20, 21, '20', '21'].includes(Number(machineId)) && mpm) {
+                const stdProdMTPerHr = calculateStdProdMTPerHr(machineId, mpm);
+                updates.stdProdMTPerHr = stdProdMTPerHr;
+            }
         }
-        else
-            setFormData((prev) => ({ ...prev, [name]: value }));
+
+        setFormData((prev) => ({ ...prev, ...updates }));
     };
 
     const calculateWeight = (nos, diameter, length, thickness) => {
         return ((diameter - thickness) * thickness * 0.02467 * length * nos) / 1000;
     };
+    const calculateWeightHotMill = (nos, diameter, length) => {
+        return (Math.PI * diameter * diameter * 7.85 * nos * length) / 4000000;
+    }
 
     const calculateOutputLength = (dia, wt, length, outputDia, outputWt) => {
         const PI = Math.PI;
@@ -146,8 +170,8 @@ export const HourlyProductionForm = () => {
             const wt = Number(d.thickness);
             const len = Number(d.length);
 
-            if ([pcs, dia, wt, len].every(n => !isNaN(n) && n > 0)) {
-                const weight = calculateWeight(pcs, dia, len, wt);
+            if ([pcs, dia, len].every(n => !isNaN(n) && n > 0)) {
+                const weight = ['1', '2', '3', 1, 2, 3].includes(formData.machineId) ? calculateWeightHotMill(pcs, dia, len) : calculateWeight(pcs, dia, len, wt);
                 totalPcs += pcs;
                 totalWeight += weight;
                 pipeSummaries.push({ pcs, mt: weight });
@@ -163,12 +187,36 @@ export const HourlyProductionForm = () => {
             standardProductionPerHrPcs = calculateStandardProduction(pipeSummaries, 4000);
         }
 
-        setFormData(prev => ({
-            ...prev,
+        // Calculate the updated values
+        const updatedValues = {
             diaDetails: newDiaDetails,
             actProdPerHr: totalPcs,
             actProdMTPerHr: totalWeight.toFixed(3),
-            stdProdPerHr: standardProductionPerHrPcs ?? formData.stdProdPerHr
+        };
+
+        // Only update stdProdPerHr if it was calculated
+        if (standardProductionPerHrPcs) {
+            updatedValues.stdProdPerHr = standardProductionPerHrPcs;
+        }
+
+        // After updating actProdPerHr and actProdMTPerHr, recalculate stdProdMTPerHr if needed
+        const machineId = formData.machineId;
+        if (![20, 21, '20', '21'].includes(Number(machineId)) && updatedValues.actProdPerHr > 0) {
+            updatedValues.stdProdMTPerHr = calculateStdProdMTPerHr(
+                machineId,
+                formData.mpm,
+                updatedValues.actProdMTPerHr,
+                updatedValues.actProdPerHr,
+                updatedValues.stdProdPerHr || formData.stdProdPerHr
+            );
+        }
+        if ([20, 21, '20', '21'].includes(Number(machineId)) && formData.stdProdMTPerHr) {
+            updatedValues.stdProdPerHr = (formData.stdProdMTPerHr * updatedValues.actProdPerHr * 0.93 / (updatedValues.actProdMTPerHr)).toFixed(3);
+        }
+
+        setFormData(prev => ({
+            ...prev,
+            ...updatedValues
         }));
     };
 
@@ -193,18 +241,39 @@ export const HourlyProductionForm = () => {
             const thickness = Number(d.thickness);
             const length = Number(d.length);
 
-            if (!isNaN(nos) && !isNaN(diameter) && !isNaN(thickness) && !isNaN(length) &&
-                nos > 0 && diameter > 0 && thickness > 0 && length > 0) {
+            if (!isNaN(nos) && !isNaN(diameter) && !isNaN(length) &&
+                nos > 0 && diameter > 0 && length > 0) {
+                if (['1', '2', '3', 1, 2, 3].includes(formData.machineId)) return sum + calculateWeightHotMill(nos, diameter, length);
+                if (!isNaN(thickness) || thickness == 0) return sum;
                 return sum + calculateWeight(nos, diameter, length, thickness);
             }
             return sum;
         }, 0);
 
-        setFormData((prev) => ({
-            ...prev,
+        const updatedValues = {
             diaDetails: newDiaDetails,
             actProdPerHr: totalPcs,
-            actProdMTPerHr: totalWeight.toFixed(2),
+            actProdMTPerHr: totalWeight.toFixed(3),
+        };
+
+        // Recalculate stdProdMTPerHr based on new values
+        if (![20, 21, '20', '21'].includes(Number(formData.machineId)) && totalPcs > 0) {
+            updatedValues.stdProdMTPerHr = calculateStdProdMTPerHr(
+                formData.machineId,
+                formData.mpm,
+                updatedValues.actProdMTPerHr,
+                updatedValues.actProdPerHr,
+                formData.stdProdPerHr
+            );
+        }
+
+        if ([20, 21, '20', '21'].includes(Number(formData.machineId)) && formData.stdProdMTPerHr) {
+            updatedValues.stdProdPerHr = (formData.stdProdMTPerHr * updatedValues.actProdPerHr * 0.93 / (updatedValues.actProdMTPerHr)).toFixed(3);
+        }
+
+        setFormData((prev) => ({
+            ...prev,
+            ...updatedValues
         }));
     };
 
@@ -636,7 +705,7 @@ export const HourlyProductionForm = () => {
                                             required
                                         />
                                     </FormControl>
-                                    <FormControl isRequired>
+                                    <FormControl isRequired={!['1', '2', '3', 1, 2, 3].includes(formData.machineId)}>
                                         <FormLabel>WT(mm)</FormLabel>
                                         <Input
                                             bg={'white'}
@@ -784,10 +853,7 @@ export const HourlyProductionForm = () => {
                                     bg={'white'}
                                     name="stdProdMTPerHr"
                                     type="number"
-                                    value={formData.stdProdMTPerHr ||
-                                        (formData.actProdPerHr
-                                            ? ((formData.actProdMTPerHr / formData.actProdPerHr) * formData.stdProdPerHr).toFixed(3)
-                                            : "")}
+                                    value={formData.stdProdMTPerHr ?? null}
                                     onWheel={(e) => e.target.blur()}
                                     onChange={handleChange}
                                 />
@@ -828,7 +894,6 @@ export const HourlyProductionForm = () => {
                                         name="Difference(MT)"
                                         type="number"
                                         value={(formData.stdProdMTPerHr * (formData.runTime ? (formData.runTime / 60) : 1) - formData.actProdMTPerHr).toFixed(3) ?? ''}
-
                                     />
                                 </FormControl>
                             </Tooltip>
