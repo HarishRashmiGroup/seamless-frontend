@@ -98,7 +98,6 @@ export const HourlyProductionForm = () => {
     };
 
     const handleChange = (e) => {
-        console.log(e)
         const { name, value } = e.target;
         let updates = { [name]: value };
 
@@ -137,12 +136,12 @@ export const HourlyProductionForm = () => {
 
         pipes.forEach(pipe => {
             const { mt, pcs } = pipe;
-            const avgWeight = (mt * 1000) / pcs;
+            const avgWeight = (mt) / pcs;
             totalPcs += pcs;
             totalWeightedWeight += avgWeight * pcs;
         });
 
-        const avgCombinedWeight = totalWeightedWeight / totalPcs;
+        const avgCombinedWeight = (totalWeightedWeight * 1000) / totalPcs;
         const standardPcs = (machineCapacityKg * efficiency) / avgCombinedWeight;
         return Math.round(standardPcs);
     };
@@ -187,7 +186,7 @@ export const HourlyProductionForm = () => {
             standardProductionPerHrPcs = calculateStandardProduction(pipeSummaries);
         }
         if ([2, '2'].includes(formData.machineId)) {
-            standardProductionPerHrPcs = calculateStandardProduction(pipeSummaries, 4000);
+            standardProductionPerHrPcs = calculateStandardProduction(pipeSummaries, 4000, 0.98);
         }
 
         // Calculate the updated values
@@ -524,7 +523,7 @@ export const HourlyProductionForm = () => {
                     <Box width="full" p={6} bg={'gray.100'} borderRadius={'md'}>
                         <Text userSelect={'none'} fontSize="xl" mb={4} borderBottom={'1px solid gray'} >Machine and Shift Details <span style={{ fontSize: '16px', color: 'red' }}>*</span></Text>
                         <Stack direction={{ base: "column", md: "row" }} spacing={4} width="full">
-                            <FormControl isRequired>
+                            <FormControl >
                                 <FormLabel userSelect={'none'}>Machine</FormLabel>
                                 {/* <Select
                                     bg={'white'}
