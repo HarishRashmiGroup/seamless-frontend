@@ -256,7 +256,7 @@ const ShiftReport = () => {
             {!operatorInfo && <Box w={'full'} justifyContent={'center'} display={'flex'} mt={100}>
 
                 <Image
-                    src="https://blackbucks-media.s3.ap-south-1.amazonaws.com/null_light-53585615fd723ba992bd2df7a10d10d1-1739771470996.png"
+                    src="https://blackbuck.blob.core.windows.net/blackbucks-media/null_light-53585615fd723ba992bd2df7a10d10d1-1739771470996.png"
                     userSelect={'none'}
                     maxH={'50vh'}
                     draggable={false}
