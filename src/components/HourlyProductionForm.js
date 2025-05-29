@@ -737,7 +737,7 @@ export const HourlyProductionForm = () => {
                                             onChange={(e) => handleDiaDetailsChange(index, 'thickness', e.target.value)}
                                             type="number"
                                             onWheel={(e) => e.target.blur()}
-                                            required
+                                            isRequired={!['1', '2', '3', 1, 2, 3].includes(formData.machineId)}
                                         />
                                     </FormControl>
                                     <FormControl isRequired>

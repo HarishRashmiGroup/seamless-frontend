@@ -22,12 +22,12 @@ export default function LoginPage() {
     const [loginId, setLoginId] = useState("");
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    const [bgImage, setBgImage] = useState("https://blackbucks-media.s3.ap-south-1.amazonaws.com/Seamless1-1739803270669.jpeg");
+    const [bgImage, setBgImage] = useState("https://blackbuck.blob.core.windows.net/blackbucks-media/Seamless1-1739803270669.jpeg");
 
     const images = [
-        "https://blackbucks-media.s3.ap-south-1.amazonaws.com/Seamless1-1739803270669.jpeg",
-        "https://blackbucks-media.s3.ap-south-1.amazonaws.com/Seamless2-1739803344706.jpeg",
-        "https://blackbucks-media.s3.ap-south-1.amazonaws.com/Seamless3-1739803378277.jpeg",
+        "https://blackbuck.blob.core.windows.net/blackbucks-media/Seamless1-1739803270669.jpeg",
+        "https://blackbuck.blob.core.windows.net/blackbucks-media/Seamless2-1739803344706.jpeg",
+        "https://blackbuck.blob.core.windows.net/blackbucks-media/Seamless3-1739803378277.jpeg",
     ];
 
     useEffect(() => {
